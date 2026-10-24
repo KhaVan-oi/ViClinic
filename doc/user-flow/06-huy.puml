@@ -1,0 +1,27 @@
+@startuml
+title UF-05. Hủy lịch
+skinparam linetype ortho
+skinparam shadowing false
+skinparam roundcorner 0
+skinparam conditionStyle InsideDiamond
+skinparam conditionEndStyle diamond
+
+start
+if (Ai hủy?) then (bệnh nhân)
+  if (Đúng lịch, chưa kết thúc và còn ít nhất 2 giờ?) then (không)
+    :Từ chối hủy;
+    stop
+  else (có)
+  endif
+else (lễ tân)
+  if (Lịch đã kết thúc?) then (có)
+    :Từ chối hủy;
+    stop
+  else (không)
+  endif
+endif
+:Chuyển Cancelled;
+:Giải phóng slot bác sĩ nếu đang giữ;
+:Ghi lịch sử và thông báo;
+stop
+@enduml

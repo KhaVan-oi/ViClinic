@@ -1,0 +1,19 @@
+@startuml
+title UF-06. Lễ tân tạo lịch Confirmed
+skinparam linetype ortho
+skinparam shadowing false
+skinparam roundcorner 0
+skinparam conditionStyle InsideDiamond
+skinparam conditionEndStyle diamond
+
+start
+:Lễ tân nhập bệnh nhân, dịch vụ, bác sĩ và thời gian;
+if (Đủ dữ liệu và lịch hợp lệ?) then (không)
+  :Không lưu lịch;
+  stop
+else (có)
+  :Tạo trực tiếp Confirmed và giữ slot bác sĩ;
+  :Thông báo bệnh nhân và bác sĩ;
+endif
+stop
+@enduml

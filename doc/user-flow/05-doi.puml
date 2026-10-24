@@ -1,0 +1,23 @@
+@startuml
+title UF-04. Đổi lịch
+skinparam linetype ortho
+skinparam shadowing false
+skinparam roundcorner 0
+skinparam conditionStyle InsideDiamond
+skinparam conditionEndStyle diamond
+
+start
+:Lễ tân chọn lịch chưa kết thúc;
+:Chọn bác sĩ hoặc thời gian mới;
+if (Phương án mới hợp lệ?) then (không)
+  :Giữ nguyên bản ghi và trạng thái;
+  :Không ghi lịch sử;
+  stop
+else (có)
+  :Giữ nguyên mã lịch và trạng thái;
+  :Cập nhật slot bác sĩ nếu có áp dụng;
+  :Ghi lịch sử;
+  :Thông báo bệnh nhân và bác sĩ liên quan;
+endif
+stop
+@enduml
