@@ -1,0 +1,34 @@
+@startuml
+title UF-01. Chuẩn bị
+skinparam linetype ortho
+skinparam shadowing false
+skinparam roundcorner 0
+skinparam conditionStyle InsideDiamond
+skinparam conditionEndStyle diamond
+
+start
+if (Đúng quản trị viên?) then (không)
+  :Từ chối tạo tài khoản nhân viên;
+  stop
+else (có)
+  :Tạo tài khoản và gán vai trò;
+endif
+if (Đúng quản lý?) then (không)
+  :Từ chối sửa dịch vụ và ca;
+  stop
+else (có)
+  :Tạo hoặc cập nhật dịch vụ;
+  :Gán bác sĩ cho dịch vụ;
+  :Tạo hoặc sửa ca làm việc;
+endif
+if (Bác sĩ có thời gian không sẵn sàng?) then (có)
+  :Bác sĩ đánh dấu khoảng không sẵn sàng;
+  if (Có lịch Confirmed bị ảnh hưởng?) then (có)
+    :Lễ tân nhận biết lịch bị ảnh hưởng;
+    :Xử lý bằng đổi lịch hoặc hủy;
+  else (không)
+  endif
+else (không)
+endif
+stop
+@enduml

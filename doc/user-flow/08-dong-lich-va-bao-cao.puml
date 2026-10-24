@@ -1,0 +1,34 @@
+@startuml
+title UF-07. Đóng lịch và xem báo cáo
+skinparam linetype ortho
+skinparam shadowing false
+skinparam roundcorner 0
+skinparam conditionStyle InsideDiamond
+skinparam conditionEndStyle diamond
+
+start
+:Mở danh sách lịch theo phạm vi vai trò;
+if (Thao tác?) then (hoàn thành lịch)
+  if (Đúng bác sĩ được gán hoặc lễ tân?) then (không)
+    :Từ chối hoàn thành;
+    stop
+  else (có)
+    if (Lịch đang Confirmed?) then (không)
+      :Từ chối hoàn thành;
+      stop
+    else (có)
+      :Chuyển Completed;
+      :Ghi lịch sử;
+    endif
+  endif
+else (xem báo cáo)
+  if (Đúng quản lý?) then (không)
+    :Không thấy báo cáo;
+    stop
+  else (có)
+    :Xem số lịch, số hoàn thành và số hủy;
+    :Lọc theo bác sĩ hoặc khoảng thời gian;
+  endif
+endif
+stop
+@enduml
