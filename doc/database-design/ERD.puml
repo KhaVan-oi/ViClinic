@@ -1,0 +1,261 @@
+@startuml
+title A08. ERD - ViClinic
+
+left to right direction
+hide circle
+skinparam linetype ortho
+skinparam shadowing false
+skinparam roundcorner 4
+skinparam classAttributeIconSize 0
+
+' Trong chế độ left-to-right:
+' - nodesep là khoảng cách CHIỀU DỌC (tăng lên 145 để thoáng hẳn chiều dọc)
+' - ranksep là khoảng cách CHIỀU NGANG (giữ 110 vừa đẹp)
+skinparam nodesep 145
+skinparam ranksep 110
+
+skinparam ArrowColor #333333
+skinparam ArrowThickness 1.2
+skinparam ArrowFontSize 11
+
+skinparam entity {
+  BackgroundColor white
+  BorderColor #444444
+  FontColor #111111
+  HeaderBackgroundColor #EAEAEA
+}
+
+' =============================
+' Entities
+' =============================
+
+entity "doctor_shifts" as DOCTOR_SHIFTS {
+  * shift_id : INTEGER <<PK>>
+  --
+  * doctor_id : INTEGER <<FK>>
+  * start_at : DATETIME
+  * end_at : DATETIME
+}
+
+entity "doctor_unavailability" as DOCTOR_UNAVAILABILITY {
+  * unavailability_id : INTEGER <<PK>>
+  --
+  * doctor_id : INTEGER <<FK>>
+  * start_at : DATETIME
+  * end_at : DATETIME
+}
+
+entity "doctor_services" as DOCTOR_SERVICES {
+  * doctor_id : INTEGER <<PK, FK>>
+  * service_id : INTEGER <<PK, FK>>
+}
+
+entity "users" as USERS {
+  * user_id : INTEGER <<PK>>
+  --
+  * login_identifier : VARCHAR(100) <<UQ>>
+  * password_hash : VARCHAR(255)
+  * full_name : VARCHAR(120)
+  birth_date : DATE
+  phone : VARCHAR(20)
+  email : VARCHAR(120)
+  * role : VARCHAR(30)
+}
+
+entity "services" as SERVICES {
+  * service_id : INTEGER <<PK>>
+  --
+  * name : VARCHAR(120)
+  * duration_minutes : INTEGER
+}
+
+entity "appointments" as APPOINTMENTS {
+  * appointment_id : INTEGER <<PK>>
+  --
+  * patient_id : INTEGER <<FK>>
+  * service_id : INTEGER <<FK>>
+  doctor_id : INTEGER <<FK, NULL>>
+  * start_at : DATETIME
+  * end_at : DATETIME
+  * status : VARCHAR(20)
+}
+
+entity "appointment_history" as APPOINTMENT_HISTORY {
+  * history_id : INTEGER <<PK>>
+  --
+  * appointment_id : INTEGER <<FK>>
+  * actor_user_id : INTEGER <<FK>>
+  old_doctor_id : INTEGER <<FK, NULL>>
+  new_doctor_id : INTEGER <<FK, NULL>>
+  --
+  * changed_at : DATETIME
+  * old_status : VARCHAR(20)
+  * new_status : VARCHAR(20)
+  old_start_at : DATETIME
+  new_start_at : DATETIME
+  old_end_at : DATETIME
+  new_end_at : DATETIME
+}
+
+entity "notifications" as NOTIFICATIONS {
+  * notification_id : INTEGER <<PK>>
+  --
+  * appointment_id : INTEGER <<FK>>
+  * recipient_user_id : INTEGER <<FK>>
+  * content : TEXT
+  * created_at : DATETIME
+}
+
+' =============================
+' Relationships
+' =============================
+
+' --- Cột 1 -> Cột 2 ---
+DOCTOR_SHIFTS }o--|| USERS : "  doctor  "
+DOCTOR_UNAVAILABILITY }o--|| USERS : "  doctor  "
+DOCTOR_SERVICES }o--|| USERS : "  doctor  "
+DOCTOR_SERVICES }o--|| SERVICES : "  service  "
+
+' --- Cột 2 -> Cột 3 ---
+' Đưa APPOINTMENT_HISTORY lên phía trên APPOINTMENTS ở Cột 3
+' và NOTIFICATIONS sang Cột 4 để không dây nào cắt nhau:
+USERS ||--o{ APPOINTMENT_HISTORY : "  actor / old_doc / new_doc  "
+APPOINTMENTS ||-left-o{ APPOINTMENT_HISTORY : "  history\n<U+00A0>"
+
+USERS ||--o{ APPOINTMENTS : "  patient /\n  assigned doctor  "
+SERVICES ||--o{ APPOINTMENTS : "  service  "
+
+' --- Cột 2 & 3 -> Cột 4 (Notifications nằm ngoài cùng bên phải) ---
+USERS ||--o{ NOTIFICATIONS : "  recipient  "
+APPOINTMENTS ||--o{ NOTIFICATIONS : "  notifications  "
+@enduml@startuml
+title A08. ERD - ViClinic
+
+left to right direction
+hide circle
+skinparam linetype ortho
+skinparam shadowing false
+skinparam roundcorner 4
+skinparam classAttributeIconSize 0
+
+' Trong chế độ left-to-right:
+' - nodesep là khoảng cách CHIỀU DỌC (tăng lên 145 để thoáng hẳn chiều dọc)
+' - ranksep là khoảng cách CHIỀU NGANG (giữ 110 vừa đẹp)
+skinparam nodesep 145
+skinparam ranksep 110
+
+skinparam ArrowColor #333333
+skinparam ArrowThickness 1.2
+skinparam ArrowFontSize 11
+
+skinparam entity {
+  BackgroundColor white
+  BorderColor #444444
+  FontColor #111111
+  HeaderBackgroundColor #EAEAEA
+}
+
+' =============================
+' Entities
+' =============================
+
+entity "doctor_shifts" as DOCTOR_SHIFTS {
+  * shift_id : INTEGER <<PK>>
+  --
+  * doctor_id : INTEGER <<FK>>
+  * start_at : DATETIME
+  * end_at : DATETIME
+}
+
+entity "doctor_unavailability" as DOCTOR_UNAVAILABILITY {
+  * unavailability_id : INTEGER <<PK>>
+  --
+  * doctor_id : INTEGER <<FK>>
+  * start_at : DATETIME
+  * end_at : DATETIME
+}
+
+entity "doctor_services" as DOCTOR_SERVICES {
+  * doctor_id : INTEGER <<PK, FK>>
+  * service_id : INTEGER <<PK, FK>>
+}
+
+entity "users" as USERS {
+  * user_id : INTEGER <<PK>>
+  --
+  * login_identifier : VARCHAR(100) <<UQ>>
+  * password_hash : VARCHAR(255)
+  * full_name : VARCHAR(120)
+  birth_date : DATE
+  phone : VARCHAR(20)
+  email : VARCHAR(120)
+  * role : VARCHAR(30)
+}
+
+entity "services" as SERVICES {
+  * service_id : INTEGER <<PK>>
+  --
+  * name : VARCHAR(120)
+  * duration_minutes : INTEGER
+}
+
+entity "appointments" as APPOINTMENTS {
+  * appointment_id : INTEGER <<PK>>
+  --
+  * patient_id : INTEGER <<FK>>
+  * service_id : INTEGER <<FK>>
+  doctor_id : INTEGER <<FK, NULL>>
+  * start_at : DATETIME
+  * end_at : DATETIME
+  * status : VARCHAR(20)
+}
+
+entity "appointment_history" as APPOINTMENT_HISTORY {
+  * history_id : INTEGER <<PK>>
+  --
+  * appointment_id : INTEGER <<FK>>
+  * actor_user_id : INTEGER <<FK>>
+  old_doctor_id : INTEGER <<FK, NULL>>
+  new_doctor_id : INTEGER <<FK, NULL>>
+  --
+  * changed_at : DATETIME
+  * old_status : VARCHAR(20)
+  * new_status : VARCHAR(20)
+  old_start_at : DATETIME
+  new_start_at : DATETIME
+  old_end_at : DATETIME
+  new_end_at : DATETIME
+}
+
+entity "notifications" as NOTIFICATIONS {
+  * notification_id : INTEGER <<PK>>
+  --
+  * appointment_id : INTEGER <<FK>>
+  * recipient_user_id : INTEGER <<FK>>
+  * content : TEXT
+  * created_at : DATETIME
+}
+
+' =============================
+' Relationships
+' =============================
+
+' --- Cột 1 -> Cột 2 ---
+DOCTOR_SHIFTS }o--|| USERS : "  doctor  "
+DOCTOR_UNAVAILABILITY }o--|| USERS : "  doctor  "
+DOCTOR_SERVICES }o--|| USERS : "  doctor  "
+DOCTOR_SERVICES }o--|| SERVICES : "  service  "
+
+' --- Cột 2 -> Cột 3 ---
+' Đưa APPOINTMENT_HISTORY lên phía trên APPOINTMENTS ở Cột 3
+' và NOTIFICATIONS sang Cột 4 để không dây nào cắt nhau:
+USERS ||--o{ APPOINTMENT_HISTORY : "  actor / old_doc / new_doc  "
+APPOINTMENTS ||-left-o{ APPOINTMENT_HISTORY : "  history\n<U+00A0>"
+
+USERS ||--o{ APPOINTMENTS : "  patient /\n  assigned doctor  "
+SERVICES ||--o{ APPOINTMENTS : "  service  "
+
+' --- Cột 2 & 3 -> Cột 4 (Notifications nằm ngoài cùng bên phải) ---
+USERS ||--o{ NOTIFICATIONS : "  recipient  "
+APPOINTMENTS ||--o{ NOTIFICATIONS : "  notifications  "
+@enduml
