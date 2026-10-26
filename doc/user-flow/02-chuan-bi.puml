@@ -1,5 +1,6 @@
 @startuml
-title UF-01. Chuẩn bị
+title UF-02. Chuẩn bị dịch vụ và lịch bác sĩ
+
 skinparam linetype ortho
 skinparam shadowing false
 skinparam roundcorner 0
@@ -7,27 +8,22 @@ skinparam conditionStyle InsideDiamond
 skinparam conditionEndStyle diamond
 
 start
-if (Đúng quản trị viên?) then (không)
-  :Từ chối tạo tài khoản nhân viên;
+:Quản lý tạo/cập nhật dịch vụ
+và thời lượng khám;
+:Gán bác sĩ có thể thực hiện từng dịch vụ;
+:Quản lý tạo hoặc sửa ca làm việc;
+if (Ca bị chồng lấn?) then (có)
+  :Từ chối lưu ca;
   stop
-else (có)
-  :Tạo tài khoản và gán vai trò;
-endif
-if (Đúng quản lý?) then (không)
-  :Từ chối sửa dịch vụ và ca;
-  stop
-else (có)
-  :Tạo hoặc cập nhật dịch vụ;
-  :Gán bác sĩ cho dịch vụ;
-  :Tạo hoặc sửa ca làm việc;
+else (không)
 endif
 if (Bác sĩ có thời gian không sẵn sàng?) then (có)
-  :Bác sĩ đánh dấu khoảng không sẵn sàng;
-  if (Có lịch Confirmed bị ảnh hưởng?) then (có)
-    :Lễ tân nhận biết lịch bị ảnh hưởng;
-    :Xử lý bằng đổi lịch hoặc hủy;
-  else (không)
-  endif
+  :Bác sĩ khai báo khoảng không sẵn sàng;
+else (không)
+endif
+if (Có lịch CONFIRMED bị ảnh hưởng?) then (có)
+  :Đưa lịch bị ảnh hưởng vào danh sách xử lý;
+  :Lễ tân đổi hoặc hủy lịch;
 else (không)
 endif
 stop
