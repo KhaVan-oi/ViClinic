@@ -1,5 +1,6 @@
 @startuml
-title UF-03. Xác nhận
+title UF-04. Xác nhận lịch
+
 skinparam linetype ortho
 skinparam shadowing false
 skinparam roundcorner 0
@@ -7,19 +8,19 @@ skinparam conditionStyle InsideDiamond
 skinparam conditionEndStyle diamond
 
 start
-:Lễ tân chọn lịch Pending;
+:Lễ tân chọn lịch PENDING;
 if (Đã có bác sĩ?) then (không)
-  :Chọn bác sĩ phù hợp còn trống;
+  :Chọn bác sĩ phù hợp;
 else (có)
 endif
-if (Bác sĩ, giờ và lịch bệnh nhân còn hợp lệ?) then (không)
-  :Giữ nguyên Pending;
-  :Không ghi lịch sử;
-  stop
-else (có)
-  :Chuyển Confirmed và giữ slot bác sĩ;
-  :Ghi lịch sử;
-  :Thông báo bệnh nhân và bác sĩ;
+:Kiểm tra lại điều kiện lịch;
+if (Hợp lệ?) then (có)
+  :Chuyển sang CONFIRMED;
+  :Ghi lịch sử thay đổi;
+  :Tạo thông báo cho bệnh nhân
+và bác sĩ được gán;
+else (không)
+  :Giữ nguyên PENDING;
 endif
 stop
 @enduml
