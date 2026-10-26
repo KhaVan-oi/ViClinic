@@ -1,0 +1,136 @@
+@startuml
+title A08. ERD - ViClinic
+
+left to right direction
+hide circle
+skinparam linetype ortho
+skinparam shadowing false
+skinparam roundcorner 4
+skinparam classAttributeIconSize 0
+
+' Trong chế độ left-to-right:
+' - nodesep: khoảng cách CHIỀU DỌC giữa các bảng cùng cột
+' - ranksep: khoảng cách CHIỀU NGANG giữa các cột
+skinparam nodesep 140
+skinparam ranksep 130
+
+skinparam ArrowColor #333333
+skinparam ArrowThickness 1.2
+skinparam ArrowFontSize 11
+
+skinparam entity {
+  BackgroundColor white
+  BorderColor #444444
+  FontColor #111111
+  HeaderBackgroundColor #EAEAEA
+}
+
+' ===================================================
+' Entities (Đồng bộ 100% với Data_Dictionary.md)
+' ===================================================
+
+entity "doctor_shifts" as DOCTOR_SHIFTS {
+  *shift_id : INTEGER <<PK>>
+  --
+  doctor_id : INTEGER <<FK>>
+  start_at : TIMESTAMPTZ
+  end_at : TIMESTAMPTZ
+}
+
+entity "doctor_unavailability" as DOCTOR_UNAVAILABILITY {
+  *unavailability_id : INTEGER <<PK>>
+  --
+  doctor_id : INTEGER <<FK>>
+  start_at : TIMESTAMPTZ
+  end_at : TIMESTAMPTZ
+}
+
+entity "accounts" as ACCOUNTS {
+  *account_id : INTEGER <<PK>>
+  --
+  user_id : INTEGER <<FK,UQ>>
+  password_hash : VARCHAR(255) NULL
+  status : VARCHAR(30)
+}
+
+entity "doctor_services" as DOCTOR_SERVICES {
+  *doctor_id : INTEGER <<PK, FK>>
+  *service_id : INTEGER <<PK, FK>>
+}
+
+entity "users" as USERS {
+  *user_id : INTEGER <<PK>>
+  --
+  full_name : VARCHAR(120)
+  birth_date : DATE NULL
+  phone : VARCHAR(20) <<UQ>>
+  email : VARCHAR(120) NULL
+  role : VARCHAR(30)
+}
+
+entity "services" as SERVICES {
+  *service_id : INTEGER <<PK>>
+  --
+  name : VARCHAR(120)
+  duration_minutes : INTEGER
+  is_active : BOOLEAN
+}
+
+entity "appointment_history" as APPOINTMENT_HISTORY {
+  *history_id : INTEGER <<PK>>
+  --
+  appointment_id : INTEGER <<FK>>
+  actor_user_id : INTEGER <<FK>>
+  old_doctor_id : INTEGER <<FK, NULL>>
+  new_doctor_id : INTEGER <<FK, NULL>>
+  changed_at : TIMESTAMPTZ
+  old_status : VARCHAR(20) NULL
+  new_status : VARCHAR(20)
+  old_start_at : TIMESTAMPTZ NULL
+  new_start_at : TIMESTAMPTZ NULL
+  old_end_at : TIMESTAMPTZ NULL
+  new_end_at : TIMESTAMPTZ NULL
+}
+
+entity "appointments" as APPOINTMENTS {
+  *appointment_id : INTEGER <<PK>>
+  --
+  patient_id : INTEGER <<FK>>
+  service_id : INTEGER <<FK>>
+  doctor_id : INTEGER <<FK, NULL>>
+  start_at : TIMESTAMPTZ
+  end_at : TIMESTAMPTZ
+  status : VARCHAR(20)
+}
+
+entity "notifications" as NOTIFICATIONS {
+  *notification_id : INTEGER <<PK>>
+  --
+  appointment_id : INTEGER <<FK>>
+  recipient_user_id : INTEGER <<FK>>
+  content : TEXT
+  created_at : TIMESTAMPTZ
+}
+
+' ===================================================
+' Relationships (Bố cục 4 cột mạch lạc, không đè chữ, không chéo dây)
+' ===================================================
+
+' --- Cột 1 (Lịch, Khóa, Tài khoản, Phân công) -> Cột 2 (Users & Services) ---
+DOCTOR_SHIFTS }o--|| USERS : "  doctor  "
+DOCTOR_UNAVAILABILITY }o--|| USERS : "  doctor  "
+ACCOUNTS }o--|| USERS : "  user  "
+DOCTOR_SERVICES }o--|| USERS : "  doctor  "
+DOCTOR_SERVICES }o--|| SERVICES : "  service  "
+
+' --- Cột 2 -> Cột 3 (Lịch sử thay đổi & Cuộc hẹn) ---
+USERS ||--o{ APPOINTMENT_HISTORY : "  actor / doctor  "
+APPOINTMENTS ||-left-o{ APPOINTMENT_HISTORY : "  history  "
+
+USERS ||--o{ APPOINTMENTS : "  patient / doctor  "
+SERVICES ||--o{ APPOINTMENTS : "  service  "
+
+' --- Cột 2 & Cột 3 -> Cột 4 (Thông báo) ---
+USERS ||--o{ NOTIFICATIONS : "  recipient  "
+APPOINTMENTS ||--o{ NOTIFICATIONS : "  appointment  "
+@enduml

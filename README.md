@@ -12,6 +12,7 @@ Toàn bộ tài liệu đặc tả yêu cầu và thiết kế nghiệp vụ đ�
 - **[doc/NFR.md](doc/NFR.md):** Đặc tả Yêu cầu Phi chức năng (Non-Functional Requirements) về hiệu năng, bảo mật, độ tin cậy.
 - **[doc/User_Flow.md](doc/User_Flow.md):** Quy ước vòng đời trạng thái lịch hẹn, danh mục sơ đồ luồng người dùng và Ma trận truy vết (Traceability Matrix).
 - **[doc/user-flow/](doc/user-flow/):** Chứa toàn bộ mã nguồn sơ đồ PlantUML (`*.puml`) và ảnh kết quả (`*.png`) độc lập từ `UF-00` đến `UF-09`.
+- **[doc/database-design/](doc/database-design/):** Thiết kế Cơ sở dữ liệu gồm Sơ đồ [ERD.puml](doc/database-design/ERD.puml), [ERD.png](doc/database-design/ERD.png) và Từ điển dữ liệu ([Data_Dictionary.md](doc/database-design/Data_Dictionary.md)).
 
 ---
 
