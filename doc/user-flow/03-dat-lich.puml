@@ -1,5 +1,6 @@
 @startuml
-title UF-02. Đặt lịch
+title UF-03. Đặt lịch
+
 skinparam linetype ortho
 skinparam shadowing false
 skinparam roundcorner 0
@@ -7,33 +8,36 @@ skinparam conditionStyle InsideDiamond
 skinparam conditionEndStyle diamond
 
 start
-if (Ai đặt?) then (bệnh nhân)
-  if (Đã có tài khoản?) then (rồi)
-    :Bệnh nhân đăng nhập;
-  else (chưa)
-    if (Thiếu trường hoặc số điện thoại trùng?) then (có)
-      :Không tạo tài khoản;
-      stop
-    else (không)
-      :Lưu tài khoản Bệnh nhân;
-      :Bệnh nhân đăng nhập;
-    endif
+if (Người đặt?) then (Bệnh nhân)
+  :Dùng Patient Profile của account đang đăng nhập;
+else (Lễ tân)
+  :Nhập SĐT bệnh nhân;
+  :Hệ thống tra cứu Patient Profile;
+  if (Tìm thấy?) then (có)
+    :Chọn hồ sơ hiện có;
+  else (không)
+    :Nhập họ tên, ngày sinh
+và email (nếu có);
+    :Tạo Patient Profile;
   endif
-else (lễ tân)
-  :Chọn bệnh nhân đã có tài khoản;
 endif
 :Chọn dịch vụ;
-:Hiển thị bác sĩ phù hợp và khung giờ trống;
-:Chọn thời gian và bác sĩ nếu muốn;
-if (Thông tin và thời gian hợp lệ?) then (không)
-  :Không tạo lịch;
-  stop
-else (có)
-  if (Đã chọn bác sĩ?) then (có)
-    :Tạo Pending và giữ slot bác sĩ;
+:Chọn thời gian và bác sĩ (tùy chọn);
+:Kiểm tra thời hạn đặt và trùng lịch bệnh nhân;
+if (Đã chọn bác sĩ?) then (có)
+  :Kiểm tra năng lực, ca làm việc,
+unavailable và trùng lịch bác sĩ;
+else (không)
+  :Kiểm tra còn bác sĩ phù hợp tại thời điểm đó;
+endif
+if (Hợp lệ?) then (có)
+  :Tạo lịch PENDING;
+  if (Có bác sĩ?) then (có)
+    :Giữ slot bác sĩ;
   else (không)
-    :Tạo Pending, chưa giữ slot bác sĩ;
   endif
+else (không)
+  :Không tạo lịch;
 endif
 stop
 @enduml

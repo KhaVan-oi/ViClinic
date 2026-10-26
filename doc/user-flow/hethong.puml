@@ -1,5 +1,6 @@
 @startuml
 title UF-00. Luồng tổng quan
+
 skinparam linetype ortho
 skinparam shadowing false
 skinparam roundcorner 0
@@ -7,26 +8,30 @@ skinparam conditionStyle InsideDiamond
 skinparam conditionEndStyle diamond
 
 start
-:Quản trị viên tạo tài khoản nhân viên;
-:Quản lý chuẩn bị dịch vụ, bác sĩ và ca làm việc;
-:Bệnh nhân hoặc lễ tân xem dịch vụ, bác sĩ và khung giờ trống;
-:Đặt lịch;
-if (Đã chọn bác sĩ?) then (có)
-  :Pending và giữ slot bác sĩ;
+:Chuẩn bị dịch vụ và lịch bác sĩ;
+:Bệnh nhân hoặc lễ tân chọn dịch vụ,
+thời gian và bác sĩ (tùy chọn);
+:Kiểm tra điều kiện đặt lịch;
+if (Hợp lệ?) then (có)
+  :Tạo PENDING;
 else (không)
-  :Pending, chưa giữ slot bác sĩ;
+  :Từ chối tạo lịch;
+  stop
 endif
-:Lễ tân xác nhận; nếu cần thì gán bác sĩ;
-if (Lịch bị hủy?) then (có)
-  :Chuyển Cancelled;
+if (Đã có bác sĩ?) then (có)
+  :Giữ slot bác sĩ;
 else (không)
-  if (Cần đổi bác sĩ hoặc giờ?) then (có)
-    :Lễ tân đổi lịch;
-  else (không)
-    :Bác sĩ được gán hoặc lễ tân hoàn thành lịch;
-    :Chuyển Completed;
-  endif
 endif
-:Quản lý xem báo cáo;
+:Lễ tân xác nhận và gán bác sĩ nếu cần;
+:Chuyển CONFIRMED;
+if (Có thay đổi?) then (đổi lịch)
+  :Lễ tân đổi bác sĩ hoặc thời gian;
+elseif (hủy) then (hủy)
+  :Chuyển CANCELLED;
+  stop
+else (không)
+endif
+:Bác sĩ hoặc lễ tân hoàn thành lịch;
+:Chuyển COMPLETED;
 stop
 @enduml

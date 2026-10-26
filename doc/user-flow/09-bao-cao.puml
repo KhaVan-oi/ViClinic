@@ -1,0 +1,18 @@
+@startuml
+title UF-09. Báo cáo
+
+skinparam linetype ortho
+skinparam shadowing false
+skinparam roundcorner 0
+skinparam conditionStyle InsideDiamond
+skinparam conditionEndStyle diamond
+
+start
+:Quản lý mở báo cáo lịch hẹn;
+:Chọn khoảng thời gian
+và bác sĩ (nếu cần);
+:Hệ thống tổng hợp số lịch,
+COMPLETED và CANCELLED;
+:Hiển thị kết quả;
+stop
+@enduml

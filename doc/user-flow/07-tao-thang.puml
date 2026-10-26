@@ -1,5 +1,6 @@
 @startuml
-title UF-06. Lễ tân tạo lịch Confirmed
+title UF-07. Lễ tân tạo lịch đã xác nhận
+
 skinparam linetype ortho
 skinparam shadowing false
 skinparam roundcorner 0
@@ -7,13 +8,25 @@ skinparam conditionStyle InsideDiamond
 skinparam conditionEndStyle diamond
 
 start
-:Lễ tân nhập bệnh nhân, dịch vụ, bác sĩ và thời gian;
-if (Đủ dữ liệu và lịch hợp lệ?) then (không)
-  :Không lưu lịch;
-  stop
-else (có)
-  :Tạo trực tiếp Confirmed và giữ slot bác sĩ;
-  :Thông báo bệnh nhân và bác sĩ;
+:Lễ tân nhập SĐT bệnh nhân;
+:Hệ thống tra cứu Patient Profile;
+if (Tìm thấy?) then (có)
+  :Chọn hồ sơ hiện có;
+else (không)
+  :Nhập họ tên, ngày sinh
+và email (nếu có);
+  :Tạo Patient Profile;
+endif
+:Chọn dịch vụ, bác sĩ và thời gian;
+:Kiểm tra năng lực bác sĩ, ca làm việc,
+unavailable và xung đột lịch;
+if (Hợp lệ?) then (có)
+  :Tạo lịch CONFIRMED;
+  :Giữ slot bác sĩ;
+  :Tạo thông báo cho bệnh nhân
+và bác sĩ được gán;
+else (không)
+  :Không tạo lịch;
 endif
 stop
 @enduml
