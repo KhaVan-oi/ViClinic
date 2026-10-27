@@ -144,3 +144,43 @@ Lưu thông báo trong ứng dụng liên quan đến lịch hẹn.
 - Doctor 1 — N `doctor_shifts` và `doctor_unavailability`.
 - Appointment 1 — N `appointment_history` và `notifications`.
 - `appointment_history.actor_user_id` và `notifications.recipient_user_id` tham chiếu `users`.
+
+## 12. Quy chuẩn băm mật khẩu (`password_hash`)
+
+Tuân thủ yêu cầu phi chức năng **NFR-012** (Bảo vệ thông tin đăng nhập: không lưu trữ hoặc trả về mật khẩu ở dạng văn bản rõ).
+
+### 12.1. Thuật toán băm (Hashing Algorithm)
+Hệ thống sử dụng thuật toán **Bcrypt** (`$2b$`) với hệ số chi phí (Cost Factor / Salt Rounds) tiêu chuẩn là **10** ($2^{10} = 1024$ vòng lặp băm).
+
+**Giải phẫu cấu trúc chuỗi hash Bcrypt (Ví dụ: `$2b$10$tZ92E7c1o3K6eEwW2qR5uuY0zP4vR2lP3.k4hO6bQ8gE0o9mH7vLi`):**
+- `$2b$`: Định danh thuật toán Bcrypt phiên bản mới nhất.
+- `10$`: Hệ số chi phí (Work factor / Cost factor = 10), đảm bảo an toàn trước tấn công dò quét brute-force nhưng vẫn giữ thời gian xử lý đăng nhập $< 100\text{ ms}$.
+- `tZ92E7c1o3K6eEwW2qR5uu`: 22 ký tự Salt ngẫu nhiên được sinh tự động (16 bytes mã hóa Base64).
+- `Y0zP4vR2lP3.k4hO6bQ8gE0o9mH7vLi`: 31 ký tự hàm băm kết quả (Ciphertext).
+
+### 12.2. Cơ chế băm và xác thực ở tầng ứng dụng (Application Layer)
+- **Khi tạo / đổi mật khẩu:**
+  $$\text{password\_hash} = \text{bcrypt.hash}(\text{plain\_password}, \text{salt\_rounds} = 10)$$
+- **Khi người dùng đăng nhập:**
+  $$\text{is\_valid} = \text{bcrypt.compare}(\text{input\_plain\_password}, \text{account.password\_hash})$$
+- Tuyệt đối không dùng các thuật toán băm một chiều cũ không có salt như MD5, SHA-1 hay SHA-256 thuần túy cho mật khẩu.
+
+### 12.3. Bảng tra cứu tài khoản & mật khẩu mẫu (Seed Data)
+
+Dưới đây là danh sách tài khoản thử nghiệm đã được nạp sẵn trong file `database/seed_data.sql`:
+
+| User ID | Họ và tên | Số điện thoại (Tên đăng nhập) | Vai trò | Trạng thái tài khoản | Mật khẩu kiểm thử (Plaintext) |
+| :---: | :--- | :---: | :--- | :--- | :--- |
+| **1** | Nguyễn Quản Trị | `0900000001` | `ADMIN` | `ACTIVE` | `Admin@2026` |
+| **2** | Trần Quản Lý | `0900000002` | `CLINIC_MANAGER` | `ACTIVE` | `Manager@2026` |
+| **3** | Lê Phước Thịnh | `0900000003` | `RECEPTIONIST` | `ACTIVE` | `Letan@2026` |
+| **4** | BS. CK1 Trần Văn Tuấn | `0911000001` | `DOCTOR` | `ACTIVE` | `DocTuan#1` |
+| **5** | ThS. BS Nguyễn Thị Lan | `0911000002` | `DOCTOR` | `ACTIVE` | `DocLan#2` |
+| **6** | BS. CKI Lê Quang Hưng | `0911000003` | `DOCTOR` | `ACTIVE` | `DocHung#3` |
+| **7** | ThS. BS Phạm Thanh Mai | `0911000004` | `DOCTOR` | `ACTIVE` | `DocMai#4` |
+| **8** | BS. CKII Vũ Hoàng Nam | `0911000005` | `DOCTOR` | `ACTIVE` | `DocNam#5` |
+| **9** | Lê Hoài An | `0922000001` | `PATIENT` | `ACTIVE` | `HoaiAn@123` |
+| **10** | Phạm Quốc Bình | `0922000002` | `PATIENT` | `ACTIVE` | `QuocBinh@456` |
+| **11** | Đỗ Minh Trí | `0922000003` | `PATIENT` | `PENDING_ACTIVATION` | *(Chưa có mật khẩu web - NULL)* |
+| **12** | Vũ Minh Khang | `0922000004` | `PATIENT` | `DISABLED` | `KhoaAcc#789` |
+
