@@ -1,0 +1,22 @@
+@startuml
+title UF-12. Khôi phục mật khẩu
+skinparam linetype ortho
+skinparam shadowing false
+skinparam roundcorner 0
+skinparam conditionStyle InsideDiamond
+skinparam conditionEndStyle diamond
+start
+:Nhập SĐT;
+if (Account ACTIVE?) then (Có)
+  :Gửi OTP khôi phục;
+  :Xác minh OTP;
+  if (OTP hợp lệ?) then (Có)
+    :Đặt mật khẩu mới;
+  else (Không)
+    :Không đổi mật khẩu;
+  endif
+else (Không)
+  :Không khôi phục qua luồng này;
+endif
+stop
+@enduml

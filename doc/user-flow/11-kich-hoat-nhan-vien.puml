@@ -1,0 +1,21 @@
+@startuml
+title UF-11. Kích hoạt tài khoản nhân viên
+skinparam linetype ortho
+skinparam shadowing false
+skinparam roundcorner 0
+skinparam conditionStyle InsideDiamond
+skinparam conditionEndStyle diamond
+start
+:Admin đã tạo/gán account nhân viên
+ở trạng thái PENDING_ACTIVATION;
+:Nhân viên nhập SĐT;
+:Gửi OTP đến SĐT;
+:Xác minh OTP;
+if (OTP hợp lệ?) then (Có)
+  :Đặt mật khẩu;
+  :Kích hoạt account;
+else (Không)
+  :Giữ trạng thái chờ kích hoạt;
+endif
+stop
+@enduml

@@ -1,0 +1,16 @@
+@startuml
+title UF-01. Đăng nhập
+skinparam linetype ortho
+skinparam shadowing false
+skinparam roundcorner 0
+skinparam conditionStyle InsideDiamond
+skinparam conditionEndStyle diamond
+start
+:Nhập SĐT và mật khẩu;
+if (Account ACTIVE và thông tin đúng?) then (Có)
+  :Truy cập chức năng được phép;
+else (Không)
+  :Từ chối đăng nhập;
+endif
+stop
+@enduml

@@ -1,0 +1,31 @@
+@startuml
+title UF-10. Đăng ký bệnh nhân
+skinparam linetype ortho
+skinparam shadowing false
+skinparam roundcorner 0
+skinparam conditionStyle InsideDiamond
+skinparam conditionEndStyle diamond
+start
+:Nhập SĐT;
+:Hệ thống tra cứu người dùng/account;
+if (Có account ACTIVE?) then (Có)
+  :Đăng nhập;
+  :Hoàn tất thông tin bệnh nhân còn thiếu;
+else (Không)
+  if (Có account chưa sử dụng được?) then (Có)
+    :Chuyển sang luồng account phù hợp;
+  else (Không)
+    :Gửi OTP đến SĐT;
+    :Xác minh OTP;
+    if (OTP hợp lệ?) then (Có)
+      :Hoàn tất thông tin bệnh nhân;
+      :Tạo hoặc liên kết account
+với người dùng hiện có;
+      :Đặt mật khẩu và kích hoạt account;
+    else (Không)
+      :Không hoàn tất đăng ký;
+    endif
+  endif
+endif
+stop
+@enduml
