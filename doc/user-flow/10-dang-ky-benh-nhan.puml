@@ -18,7 +18,7 @@ else (Không)
     :Gửi OTP đến SĐT;
     :Xác minh OTP;
     if (OTP hợp lệ?) then (Có)
-      :Hoàn tất thông tin bệnh nhân;
+      :Bổ sung thông tin bệnh nhân còn thiếu (nếu có);
       :Tạo hoặc liên kết account
 với người dùng hiện có;
       :Đặt mật khẩu và kích hoạt account;

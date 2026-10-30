@@ -22,7 +22,7 @@
 | FR-M02-005 | Gán bác sĩ và xác nhận | Lễ tân xác nhận lịch `PENDING`. Nếu lịch chưa có bác sĩ, lễ tân phải chọn một bác sĩ phù hợp; hệ thống kiểm tra lại điều kiện lịch trước khi chuyển sang `CONFIRMED`. | Cao |
 | FR-M02-006 | Tạo lịch đã xác nhận | Lễ tân được tạo trực tiếp lịch `CONFIRMED` khi đã có hồ sơ bệnh nhân, dịch vụ, bác sĩ và thời gian hợp lệ. Các điều kiện về năng lực, ca làm việc và xung đột lịch phải được kiểm tra trước khi lưu. | Trung bình |
 | FR-M02-007 | Chặn trùng lịch | Hệ thống không cho phép hai lịch `PENDING`/`CONFIRMED` của cùng bệnh nhân bị chồng lấn và không cho phép một bác sĩ có hai lịch đang giữ slot bị chồng lấn. Quy tắc áp dụng khi tạo, xác nhận và đổi lịch. | Cao |
-| FR-M02-008 | Ràng buộc khung giờ của lịch hẹn | Lịch có bác sĩ chỉ hợp lệ khi toàn bộ thời lượng khám nằm trong ca làm việc và không giao với khoảng thời gian bác sĩ không sẵn sàng. Không bắt buộc khoảng đệm giữa hai lịch liền nhau. | Cao |
+| FR-M02-008 | Ràng buộc khung giờ của lịch hẹn | Khi tạo, gán bác sĩ, xác nhận hoặc đổi lịch, toàn bộ thời lượng lịch hẹn phải nằm trong ca làm việc của bác sĩ, không giao với khoảng không sẵn sàng và không xung đột với lịch đang hoạt động. | Cao |
 | FR-M02-009 | Hoàn thành lịch hẹn | Bác sĩ được gán hoặc lễ tân được chuyển lịch `CONFIRMED` sang `COMPLETED` khi ghi nhận buổi khám thực tế đã hoàn tất. Hệ thống không tự chuyển lịch sang `COMPLETED` chỉ vì đã qua thời gian dự kiến; `COMPLETED` là trạng thái kết thúc. | Cao |
 | FR-M02-010 | Hủy lịch | Bệnh nhân được hủy lịch `PENDING`/`CONFIRMED` của mình trước giờ khám ít nhất 2 giờ. Trong 2 giờ cuối, lễ tân có thể hỗ trợ hủy. Lịch `COMPLETED` hoặc `CANCELLED` không được hủy lại. | Cao |
 | FR-M02-011 | Đổi bác sĩ hoặc giờ khám | Lễ tân được đổi bác sĩ hoặc thời gian trên cùng một lịch đang ở trạng thái `PENDING` hoặc `CONFIRMED`. Hệ thống kiểm tra lại các điều kiện lịch trước khi cập nhật; nếu không hợp lệ thì dữ liệu cũ được giữ nguyên. | Cao |
@@ -36,7 +36,7 @@
 | FR-M03-001 | Quản lý ca làm việc | Quản lý phòng khám tạo và sửa ca làm việc của bác sĩ theo ngày và khoảng giờ. Các ca của cùng một bác sĩ không được chồng lấn; MVP không yêu cầu mẫu ca lặp tự động theo tuần. | Cao |
 | FR-M03-002 | Đánh dấu không sẵn sàng | Bác sĩ được đánh dấu ngày hoặc khoảng thời gian không sẵn sàng. Dữ liệu này được dùng khi tính khung giờ trống; việc sửa ca làm việc chính thức thuộc quyền Quản lý phòng khám. | Cao |
 | FR-M03-003 | Gửi thông báo trong hệ thống | Hệ thống tạo thông báo trong ứng dụng khi lịch được xác nhận, đổi bác sĩ/thời gian hoặc bị hủy. Người nhận gồm bệnh nhân và bác sĩ liên quan theo từng sự kiện; không có nhắc lịch tự động trước giờ khám trong MVP. | Trung bình |
-| FR-M03-004 | Xử lý lịch bị ảnh hưởng bởi lịch bác sĩ | Khi thay đổi ca hoặc thời gian không sẵn sàng làm một lịch `CONFIRMED` không còn phù hợp, hệ thống xác định lịch bị ảnh hưởng để lễ tân đổi hoặc hủy. Hệ thống không tự động phân bổ lại lịch. | Cao |
+| FR-M03-004 | Xử lý lịch bị ảnh hưởng bởi lịch bác sĩ | Khi thay đổi ca làm việc hoặc bác sĩ khai báo không sẵn sàng làm ảnh hưởng đến lịch PENDING đã gán bác sĩ hoặc CONFIRMED, hệ thống phải xác định các lịch bị ảnh hưởng để Lễ tân điều phối; không tự động hủy, đổi giờ hoặc đổi bác sĩ. | Cao |
 
 ### 3.1.4. Module Báo cáo thống kê cơ bản (M04)
 

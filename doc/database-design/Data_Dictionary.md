@@ -101,7 +101,7 @@ Quan hệ nhiều-nhiều giữa Bác sĩ và Dịch vụ.
 **Ràng buộc chính:**
 - `CONFIRMED` và `COMPLETED` phải có `doctor_id`.
 - Doctor được gán phải thực hiện được Service tương ứng.
-- Lịch có Doctor phải nằm trong ca làm việc và không giao với khoảng không sẵn sàng.
+- Khi tạo, gán Doctor, xác nhận hoặc đổi lịch, lịch có Doctor phải nằm trong ca làm việc và không giao với khoảng không sẵn sàng.
 - Lịch `PENDING`/`CONFIRMED` không được overlap theo bệnh nhân; các lịch đang giữ slot của cùng Doctor không được overlap.
 
 ## 10. `appointment_history`

@@ -108,7 +108,7 @@ Bác sĩ khai báo khoảng thời gian không sẵn sàng; các lịch bị ả
 | UF-06 Hủy lịch | FR-M02-010 | NFR-008 |
 | UF-07 Tạo lịch đã xác nhận | FR-M01-005, FR-M02-006, FR-M02-007, FR-M02-008 | NFR-004, NFR-007 |
 | UF-08 Hoàn thành lịch | FR-M02-009 | NFR-008 |
-| UF-09 Báo cáo | FR-M04-001 | NFR-001, NFR-002, NFR-010 |
+| UF-09 Báo cáo | FR-M04-001 | NFR-001, NFR-002 |
 | UF-10 Đăng ký bệnh nhân | FR-M01-001 | NFR-008, NFR-012, NFR-013 |
 | UF-11 Kích hoạt tài khoản nhân viên | FR-M01-002 | NFR-008, NFR-012, NFR-013 |
 | UF-12 Khôi phục mật khẩu | FR-M01-006 | NFR-008, NFR-012, NFR-013 |
