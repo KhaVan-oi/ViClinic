@@ -1,0 +1,220 @@
+// Prisma Schema for ViClinic
+// Aligned with doc/database-design/ERD.puml and Data_Dictionary.md
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// -----------------------------------------------------------------------------
+// Enums
+// -----------------------------------------------------------------------------
+
+enum Role {
+  PATIENT
+  RECEPTIONIST
+  DOCTOR
+  CLINIC_MANAGER
+  ADMIN
+}
+
+enum AccountStatus {
+  PENDING_ACTIVATION
+  ACTIVE
+  DISABLED
+}
+
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+}
+
+// -----------------------------------------------------------------------------
+// 1. Users: Core personal identity profile
+// -----------------------------------------------------------------------------
+model User {
+  user_id    Int       @id @default(autoincrement()) @map("user_id")
+  full_name  String    @db.VarChar(120) @map("full_name")
+  birth_date DateTime? @db.Date @map("birth_date")
+  phone      String    @unique @db.VarChar(20) @map("phone")
+  email      String?   @db.VarChar(120) @map("email")
+
+  // Relationships
+  roles                       UserRole[]
+  account                     Account?
+  doctor_shifts               DoctorShift[]
+  doctor_unavailability       DoctorUnavailability[]
+  doctor_services             DoctorService[]
+  patient_appointments        Appointment[]          @relation("PatientAppointments")
+  doctor_appointments         Appointment[]          @relation("DoctorAppointments")
+  appointment_history_actor   AppointmentHistory[]   @relation("HistoryActor")
+  appointment_history_old_doc AppointmentHistory[]   @relation("HistoryOldDoctor")
+  appointment_history_new_doc AppointmentHistory[]   @relation("HistoryNewDoctor")
+  notifications               Notification[]         @relation("RecipientNotifications")
+
+  @@map("users")
+}
+
+// -----------------------------------------------------------------------------
+// 2. User Roles: User-to-Role assignments (Supports multi-role)
+// -----------------------------------------------------------------------------
+model UserRole {
+  user_id Int  @map("user_id")
+  role    Role @map("role")
+
+  user User @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+
+  @@id([user_id, role])
+  @@index([role], name: "idx_user_roles_role")
+  @@map("user_roles")
+}
+
+// -----------------------------------------------------------------------------
+// 3. Accounts: Web authentication credentials and status
+// -----------------------------------------------------------------------------
+model Account {
+  account_id    Int           @id @default(autoincrement()) @map("account_id")
+  user_id       Int           @unique @map("user_id")
+  password_hash String?       @db.VarChar(255) @map("password_hash")
+  status        AccountStatus @default(ACTIVE) @map("status")
+  created_at    DateTime      @default(now()) @db.Timestamptz @map("created_at")
+
+  user User @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+
+  @@map("accounts")
+}
+
+// -----------------------------------------------------------------------------
+// 4. Services: Clinic medical services catalog
+// -----------------------------------------------------------------------------
+model Service {
+  service_id       Int     @id @default(autoincrement()) @map("service_id")
+  name             String  @db.VarChar(120) @map("name")
+  duration_minutes Int     @map("duration_minutes")
+  is_active        Boolean @default(true) @map("is_active")
+
+  doctor_services DoctorService[]
+  appointments    Appointment[]
+
+  @@map("services")
+}
+
+// -----------------------------------------------------------------------------
+// 5. Doctor Services: Many-to-many doctor qualifications
+// -----------------------------------------------------------------------------
+model DoctorService {
+  doctor_id  Int @map("doctor_id")
+  service_id Int @map("service_id")
+
+  doctor  User    @relation(fields: [doctor_id], references: [user_id], onDelete: Cascade)
+  service Service @relation(fields: [service_id], references: [service_id], onDelete: Cascade)
+
+  @@id([doctor_id, service_id])
+  @@map("doctor_services")
+}
+
+// -----------------------------------------------------------------------------
+// 6. Doctor Shifts: Daily scheduled work shifts
+// -----------------------------------------------------------------------------
+model DoctorShift {
+  shift_id  Int      @id @default(autoincrement()) @map("shift_id")
+  doctor_id Int      @map("doctor_id")
+  start_at  DateTime @db.Timestamptz @map("start_at")
+  end_at    DateTime @db.Timestamptz @map("end_at")
+
+  doctor User @relation(fields: [doctor_id], references: [user_id], onDelete: Cascade)
+
+  @@index([doctor_id, start_at, end_at], name: "idx_shifts_doctor_time")
+  @@map("doctor_shifts")
+}
+
+// -----------------------------------------------------------------------------
+// 7. Doctor Unavailability: Time off or sudden leaves
+// -----------------------------------------------------------------------------
+model DoctorUnavailability {
+  unavailability_id Int      @id @default(autoincrement()) @map("unavailability_id")
+  doctor_id         Int      @map("doctor_id")
+  start_at          DateTime @db.Timestamptz @map("start_at")
+  end_at            DateTime @db.Timestamptz @map("end_at")
+
+  doctor User @relation(fields: [doctor_id], references: [user_id], onDelete: Cascade)
+
+  @@index([doctor_id, start_at, end_at], name: "idx_unavailability_doctor_time")
+  @@map("doctor_unavailability")
+}
+
+// -----------------------------------------------------------------------------
+// 8. Appointments: Patient booking records
+// -----------------------------------------------------------------------------
+model Appointment {
+  appointment_id Int               @id @default(autoincrement()) @map("appointment_id")
+  patient_id     Int               @map("patient_id")
+  service_id     Int               @map("service_id")
+  doctor_id      Int?              @map("doctor_id")
+  start_at       DateTime          @db.Timestamptz @map("start_at")
+  end_at         DateTime          @db.Timestamptz @map("end_at")
+  status         AppointmentStatus @map("status")
+
+  patient User    @relation("PatientAppointments", fields: [patient_id], references: [user_id], onDelete: Restrict)
+  service Service @relation(fields: [service_id], references: [service_id], onDelete: Restrict)
+  doctor  User?   @relation("DoctorAppointments", fields: [doctor_id], references: [user_id], onDelete: SetNull)
+
+  history       AppointmentHistory[]
+  notifications Notification[]
+
+  @@index([doctor_id, status, start_at], name: "idx_appointments_doc_status_start")
+  @@index([patient_id, start_at, end_at, status], name: "idx_appointments_pat_time_status")
+  @@index([doctor_id, start_at, end_at, status], name: "idx_appointments_doc_time_status")
+  @@map("appointments")
+}
+
+// -----------------------------------------------------------------------------
+// 9. Appointment History: Audit trail for changes in appointment
+// -----------------------------------------------------------------------------
+model AppointmentHistory {
+  history_id     Int                @id @default(autoincrement()) @map("history_id")
+  appointment_id Int                @map("appointment_id")
+  actor_user_id  Int                @map("actor_user_id")
+  old_doctor_id  Int?               @map("old_doctor_id")
+  new_doctor_id  Int?               @map("new_doctor_id")
+  changed_at     DateTime           @default(now()) @db.Timestamptz @map("changed_at")
+  old_status     AppointmentStatus? @map("old_status")
+  new_status     AppointmentStatus  @map("new_status")
+  old_start_at   DateTime?          @db.Timestamptz @map("old_start_at")
+  new_start_at   DateTime?          @db.Timestamptz @map("new_start_at")
+  old_end_at     DateTime?          @db.Timestamptz @map("old_end_at")
+  new_end_at     DateTime?          @db.Timestamptz @map("new_end_at")
+
+  appointment Appointment @relation(fields: [appointment_id], references: [appointment_id], onDelete: Cascade)
+  actor       User        @relation("HistoryActor", fields: [actor_user_id], references: [user_id], onDelete: Restrict)
+  old_doctor  User?       @relation("HistoryOldDoctor", fields: [old_doctor_id], references: [user_id], onDelete: SetNull)
+  new_doctor  User?       @relation("HistoryNewDoctor", fields: [new_doctor_id], references: [user_id], onDelete: SetNull)
+
+  @@index([appointment_id], name: "idx_history_appointment")
+  @@map("appointment_history")
+}
+
+// -----------------------------------------------------------------------------
+// 10. Notifications: In-app user notifications
+// -----------------------------------------------------------------------------
+model Notification {
+  notification_id   Int      @id @default(autoincrement()) @map("notification_id")
+  appointment_id    Int      @map("appointment_id")
+  recipient_user_id Int      @map("recipient_user_id")
+  content           String   @db.Text @map("content")
+  created_at        DateTime @default(now()) @db.Timestamptz @map("created_at")
+
+  appointment Appointment @relation(fields: [appointment_id], references: [appointment_id], onDelete: Cascade)
+  recipient   User        @relation("RecipientNotifications", fields: [recipient_user_id], references: [user_id], onDelete: Cascade)
+
+  @@index([recipient_user_id], name: "idx_notifications_recipient")
+  @@map("notifications")
+}
+

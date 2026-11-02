@@ -1,0 +1,19 @@
+@startuml
+title UF-13. Kích hoạt lại tài khoản
+skinparam linetype ortho
+skinparam shadowing false
+skinparam roundcorner 0
+skinparam conditionStyle InsideDiamond
+skinparam conditionEndStyle diamond
+start
+:Admin chọn account DISABLED;
+:Cho phép kích hoạt lại;
+:Gửi OTP kích hoạt lại đến SĐT;
+:Chính chủ nhập OTP;
+if (OTP hợp lệ?) then (Có)
+  :Chuyển account sang ACTIVE;
+else (Không)
+  :Giữ account DISABLED;
+endif
+stop
+@enduml

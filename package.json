@@ -1,0 +1,22 @@
+{
+  "name": "viclinic",
+  "version": "1.0.0",
+  "description": "ViClinic — Clinic Appointment Management System",
+  "main": "index.js",
+  "scripts": {
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:seed": "prisma db seed",
+    "prisma:studio": "prisma studio"
+  },
+  "prisma": {
+    "schema": "database/schema.prisma",
+    "seed": "node database/seed.js"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.22.0"
+  },
+  "devDependencies": {
+    "prisma": "^5.22.0"
+  }
+}
