@@ -30,3 +30,7 @@ yarn-error.log*
 *.log
 temp/
 tmp/
+
+# Next.js / TypeScript
+next-env.d.ts
+*.tsbuildinfo

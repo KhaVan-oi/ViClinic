@@ -30,3 +30,5 @@ Cài đặt extension hỗ trợ preview trên VS Code:
 2. Mở khung xem trước:
    - **Với Plan UML:** Bấm biểu tượng **Preview** ở góc trên bên phải thanh editor tab (hoặc nhấn `Ctrl + Shift + P` rồi chọn `Plan UML: Open Preview`).
    - **Với PlantUML (jebbs):** Nhấn phím tắt `Alt + D`.
+
+- **[src/app/api/](src/app/api/HUONG-DAN-CHAY.md):** API dang nh?p & qu?n l� t�i kho?n (Supabase Auth) � thi?t k?: [THIET-KE-AUTH.md](src/app/api/THIET-KE-AUTH.md)
