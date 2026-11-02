@@ -1,43 +1,28 @@
 @startuml
 title UF-03. Đặt lịch
-
 skinparam linetype ortho
 skinparam shadowing false
 skinparam roundcorner 0
 skinparam conditionStyle InsideDiamond
 skinparam conditionEndStyle diamond
-
 start
 if (Người đặt?) then (Bệnh nhân)
-  :Dùng Patient Profile của account đang đăng nhập;
+  :Dùng hồ sơ bệnh nhân
+của tài khoản đang đăng nhập;
 else (Lễ tân)
-  :Nhập SĐT bệnh nhân;
-  :Hệ thống tra cứu Patient Profile;
-  if (Tìm thấy?) then (có)
-    :Chọn hồ sơ hiện có;
-  else (không)
-    :Nhập họ tên, ngày sinh
-và email (nếu có);
-    :Tạo Patient Profile;
+  :Tra cứu bệnh nhân bằng SĐT;
+  if (Có hồ sơ?) then (Có)
+  else (Không)
+    :Tạo hồ sơ bệnh nhân;
   endif
 endif
 :Chọn dịch vụ;
 :Chọn thời gian và bác sĩ (tùy chọn);
-:Kiểm tra thời hạn đặt và trùng lịch bệnh nhân;
-if (Đã chọn bác sĩ?) then (có)
-  :Kiểm tra năng lực, ca làm việc,
-unavailable và trùng lịch bác sĩ;
-else (không)
-  :Kiểm tra còn bác sĩ phù hợp tại thời điểm đó;
-endif
-if (Hợp lệ?) then (có)
+:Hệ thống kiểm tra điều kiện lịch;
+if (Hợp lệ?) then (Có)
   :Tạo lịch PENDING;
-  if (Có bác sĩ?) then (có)
-    :Giữ slot bác sĩ;
-  else (không)
-  endif
-else (không)
-  :Không tạo lịch;
+else (Không)
+  :Yêu cầu chọn phương án khác;
 endif
 stop
 @enduml

@@ -1,22 +1,17 @@
 @startuml
 title UF-05. Đổi lịch
-
 skinparam linetype ortho
 skinparam shadowing false
 skinparam roundcorner 0
 skinparam conditionStyle InsideDiamond
 skinparam conditionEndStyle diamond
-
 start
-:Lễ tân chọn lịch chưa kết thúc;
+:Lễ tân chọn lịch PENDING/CONFIRMED;
 :Chọn bác sĩ hoặc thời gian mới;
-:Kiểm tra lại điều kiện lịch;
-if (Hợp lệ?) then (có)
-  :Cập nhật trên cùng Appointment;
-  :Cập nhật slot bác sĩ;
-  :Ghi lịch sử thay đổi;
-  :Tạo thông báo cho các bên liên quan;
-else (không)
+:Hệ thống kiểm tra lại điều kiện lịch;
+if (Hợp lệ?) then (Có)
+  :Cập nhật trên cùng lịch hẹn;
+else (Không)
   :Giữ nguyên lịch hiện tại;
 endif
 stop
