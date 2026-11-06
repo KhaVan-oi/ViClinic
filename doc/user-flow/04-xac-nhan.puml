@@ -1,0 +1,21 @@
+@startuml
+title UF-04. Xác nhận lịch
+skinparam linetype ortho
+skinparam shadowing false
+skinparam roundcorner 0
+skinparam conditionStyle InsideDiamond
+skinparam conditionEndStyle diamond
+start
+:Lễ tân chọn lịch PENDING;
+if (Đã có bác sĩ?) then (Không)
+  :Chọn bác sĩ phù hợp;
+else (Có)
+endif
+:Hệ thống kiểm tra lại điều kiện lịch;
+if (Hợp lệ?) then (Có)
+  :Chuyển sang CONFIRMED;
+else (Không)
+  :Giữ nguyên PENDING;
+endif
+stop
+@enduml

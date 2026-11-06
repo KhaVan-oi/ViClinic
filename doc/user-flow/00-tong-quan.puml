@@ -1,0 +1,28 @@
+@startuml
+title UF-00. Luồng tổng quan lịch hẹn
+skinparam linetype ortho
+skinparam shadowing false
+skinparam roundcorner 0
+skinparam conditionStyle InsideDiamond
+skinparam conditionEndStyle diamond
+start
+:Bệnh nhân hoặc Lễ tân đặt lịch;
+if (Lịch hợp lệ?) then (Có)
+  :Tạo PENDING;
+else (Không)
+  :Không tạo lịch;
+  stop
+endif
+:Lễ tân xác nhận và gán bác sĩ nếu cần;
+:CONFIRMED;
+if (Cần xử lý tiếp?) then (Đổi lịch)
+  :Lễ tân đổi bác sĩ/thời gian;
+elseif (Hủy) then (Hủy)
+  :CANCELLED;
+  stop
+else (Không)
+endif
+:Bác sĩ hoặc Lễ tân ghi nhận hoàn tất;
+:COMPLETED;
+stop
+@enduml

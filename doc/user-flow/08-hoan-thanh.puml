@@ -1,0 +1,17 @@
+@startuml
+title UF-08. Hoàn thành lịch
+skinparam linetype ortho
+skinparam shadowing false
+skinparam roundcorner 0
+skinparam conditionStyle InsideDiamond
+skinparam conditionEndStyle diamond
+start
+:Bác sĩ được gán hoặc Lễ tân chọn lịch;
+if (Lịch CONFIRMED?) then (Có)
+  :Ghi nhận buổi khám đã hoàn tất;
+  :Chuyển sang COMPLETED;
+else (Không)
+  :Từ chối thao tác;
+endif
+stop
+@enduml

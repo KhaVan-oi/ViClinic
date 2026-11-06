@@ -1,0 +1,15 @@
+@startuml
+title UF-02. Quản lý dịch vụ và năng lực bác sĩ
+skinparam linetype ortho
+skinparam shadowing false
+skinparam roundcorner 0
+skinparam conditionStyle InsideDiamond
+skinparam conditionEndStyle diamond
+start
+:Quản lý mở danh mục dịch vụ;
+:Tạo/cập nhật dịch vụ
+và thời lượng khám;
+:Gán bác sĩ có thể thực hiện dịch vụ;
+:Lưu cấu hình;
+stop
+@enduml

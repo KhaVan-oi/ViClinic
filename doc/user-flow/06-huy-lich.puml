@@ -1,0 +1,21 @@
+@startuml
+title UF-06. Hủy lịch
+skinparam linetype ortho
+skinparam shadowing false
+skinparam roundcorner 0
+skinparam conditionStyle InsideDiamond
+skinparam conditionEndStyle diamond
+start
+if (Người hủy?) then (Bệnh nhân)
+  :Chọn lịch PENDING/CONFIRMED của mình;
+  if (Còn ít nhất 2 giờ?) then (Có)
+  else (Không)
+    :Yêu cầu liên hệ phòng khám;
+    stop
+  endif
+else (Lễ tân)
+  :Chọn lịch PENDING/CONFIRMED cần hủy;
+endif
+:Chuyển sang CANCELLED;
+stop
+@enduml

@@ -1,0 +1,18 @@
+@startuml
+title UF-15. Bác sĩ báo không sẵn sàng
+skinparam linetype ortho
+skinparam shadowing false
+skinparam roundcorner 0
+skinparam conditionStyle InsideDiamond
+skinparam conditionEndStyle diamond
+start
+:Bác sĩ chọn khoảng thời gian
+không sẵn sàng;
+:Lưu khoảng không sẵn sàng;
+if (Có lịch bị ảnh hưởng?) then (Có)
+  :Đưa lịch vào danh sách
+để Lễ tân xử lý;
+else (Không)
+endif
+stop
+@enduml

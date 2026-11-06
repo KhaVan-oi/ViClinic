@@ -1,0 +1,28 @@
+@startuml
+title UF-03. Đặt lịch
+skinparam linetype ortho
+skinparam shadowing false
+skinparam roundcorner 0
+skinparam conditionStyle InsideDiamond
+skinparam conditionEndStyle diamond
+start
+if (Người đặt?) then (Bệnh nhân)
+  :Dùng hồ sơ bệnh nhân
+của tài khoản đang đăng nhập;
+else (Lễ tân)
+  :Tra cứu bệnh nhân bằng SĐT;
+  if (Có hồ sơ?) then (Có)
+  else (Không)
+    :Tạo hồ sơ bệnh nhân;
+  endif
+endif
+:Chọn dịch vụ;
+:Chọn thời gian và bác sĩ (tùy chọn);
+:Hệ thống kiểm tra điều kiện lịch;
+if (Hợp lệ?) then (Có)
+  :Tạo lịch PENDING;
+else (Không)
+  :Yêu cầu chọn phương án khác;
+endif
+stop
+@enduml

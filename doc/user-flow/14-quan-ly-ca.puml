@@ -1,0 +1,23 @@
+@startuml
+title UF-14. Quản lý ca làm việc bác sĩ
+skinparam linetype ortho
+skinparam shadowing false
+skinparam roundcorner 0
+skinparam conditionStyle InsideDiamond
+skinparam conditionEndStyle diamond
+start
+:Quản lý chọn bác sĩ và ngày;
+:Tạo hoặc sửa ca làm việc;
+:Hệ thống kiểm tra chồng lấn ca;
+if (Hợp lệ?) then (Có)
+  :Lưu ca làm việc;
+  if (Có lịch bị ảnh hưởng?) then (Có)
+    :Đưa lịch vào danh sách
+để Lễ tân xử lý;
+  else (Không)
+  endif
+else (Không)
+  :Không lưu thay đổi;
+endif
+stop
+@enduml

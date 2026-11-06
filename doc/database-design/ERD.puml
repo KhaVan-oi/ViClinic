@@ -1,0 +1,147 @@
+@startuml
+
+title A08. ERD - ViClinic
+
+top to bottom direction
+hide circle
+
+skinparam linetype ortho
+skinparam shadowing false
+skinparam roundcorner 4
+skinparam classAttributeIconSize 0
+skinparam nodesep 90
+skinparam ranksep 110
+skinparam ArrowColor #333333
+skinparam ArrowThickness 1.1
+skinparam ArrowFontSize 10
+
+entity "doctor_shifts" as DOCTOR_SHIFTS {
+  *shift_id : INTEGER <<PK>>
+  --
+  doctor_id : INTEGER <<FK>>
+  start_at : TIMESTAMPTZ
+  end_at : TIMESTAMPTZ
+}
+
+entity "doctor_unavailability" as DOCTOR_UNAVAILABILITY {
+  *unavailability_id : INTEGER <<PK>>
+  --
+  doctor_id : INTEGER <<FK>>
+  start_at : TIMESTAMPTZ
+  end_at : TIMESTAMPTZ
+}
+
+entity "user_roles" as USER_ROLES {
+  *user_id : INTEGER <<PK, FK>>
+  *role : VARCHAR(30) <<PK>>
+}
+
+entity "accounts" as ACCOUNTS {
+  *account_id : INTEGER <<PK>>
+  --
+  user_id : INTEGER <<FK,UQ>>
+  password_hash : VARCHAR(255) NULL
+  status : VARCHAR(30)
+}
+
+entity "users" as USERS {
+  *user_id : INTEGER <<PK>>
+  --
+  full_name : VARCHAR(120)
+  birth_date : DATE NULL
+  phone : VARCHAR(20) <<UQ>>
+  email : VARCHAR(120) NULL
+}
+
+entity "doctor_services" as DOCTOR_SERVICES {
+  *doctor_id : INTEGER <<PK, FK>>
+  *service_id : INTEGER <<PK, FK>>
+}
+
+entity "appointment_history" as APPOINTMENT_HISTORY {
+  *history_id : INTEGER <<PK>>
+  --
+  appointment_id : INTEGER <<FK>>
+  actor_user_id : INTEGER <<FK>>
+  old_doctor_id : INTEGER <<FK, NULL>>
+  new_doctor_id : INTEGER <<FK, NULL>>
+  changed_at : TIMESTAMPTZ
+  old_status : VARCHAR(20) NULL
+  new_status : VARCHAR(20)
+  old_start_at : TIMESTAMPTZ NULL
+  new_start_at : TIMESTAMPTZ NULL
+  old_end_at : TIMESTAMPTZ NULL
+  new_end_at : TIMESTAMPTZ NULL
+}
+
+entity "appointments" as APPOINTMENTS {
+  *appointment_id : INTEGER <<PK>>
+  --
+  patient_id : INTEGER <<FK>>
+  service_id : INTEGER <<FK>>
+  doctor_id : INTEGER <<FK, NULL>>
+  start_at : TIMESTAMPTZ
+  end_at : TIMESTAMPTZ
+  status : VARCHAR(20)
+}
+
+entity "notifications" as NOTIFICATIONS {
+  *notification_id : INTEGER <<PK>>
+  --
+  appointment_id : INTEGER <<FK>>
+  recipient_user_id : INTEGER <<FK>>
+  content : TEXT
+  created_at : TIMESTAMPTZ
+}
+
+entity "services" as SERVICES {
+  *service_id : INTEGER <<PK>>
+  --
+  name : VARCHAR(120)
+  duration_minutes : INTEGER
+  is_active : BOOLEAN
+}
+
+' ================= LƯỚI ẨN =================
+' Hàng 1
+DOCTOR_SHIFTS -[hidden]right- DOCTOR_UNAVAILABILITY
+DOCTOR_UNAVAILABILITY -[hidden]right- USER_ROLES
+
+' Hàng 2 (doctor_services nằm ở cột 4, cách xa users)
+ACCOUNTS -[hidden]right- USERS
+USERS -[hidden]right----- DOCTOR_SERVICES
+
+' Hàng 3
+APPOINTMENT_HISTORY -[hidden]right- APPOINTMENTS
+APPOINTMENTS -[hidden]right- NOTIFICATIONS
+
+' Cột dọc
+DOCTOR_SHIFTS -[hidden]down- ACCOUNTS
+ACCOUNTS -[hidden]down- APPOINTMENT_HISTORY
+DOCTOR_UNAVAILABILITY -[hidden]down- USERS
+USER_ROLES -[hidden]down--- NOTIFICATIONS
+
+' ================= QUAN HỆ =================
+' Hàng 1 -> users
+DOCTOR_SHIFTS }o-down-|| USERS : "doctor"
+DOCTOR_UNAVAILABILITY }o-down-|| USERS : "doctor"
+USER_ROLES }o-down-|| USERS : "user"
+
+' Hàng 2
+ACCOUNTS |o-right-|| USERS : "user"
+USERS ||-right-o{ DOCTOR_SERVICES : "doctor"
+
+' users -> hàng 3
+USERS ||-down-o{ APPOINTMENT_HISTORY : "actor / doctor"
+USERS ||-down-o{ APPOINTMENTS : "patient / doctor"
+USERS ||-down-o{ NOTIFICATIONS : "recipient"
+
+' Hàng 3
+APPOINTMENT_HISTORY }o-right-|| APPOINTMENTS : "appointment"
+APPOINTMENTS ||-right-o{ NOTIFICATIONS : "appointment"
+
+' services nằm hàng 4, cột 4 (dưới doctor_services)
+APPOINTMENTS }o-down-|| SERVICES : "service"
+DOCTOR_SERVICES }o-down-|| SERVICES : "service"
+
+@enduml
