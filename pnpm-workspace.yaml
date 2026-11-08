@@ -5,3 +5,6 @@ allowBuilds:
   esbuild: true
   prisma: true
   unrs-resolver: true
+
+patchedDependencies:
+  '@relay-works/sms-dev@2.1.0': sms-mock/@relay-works__sms-dev@2.1.0.patch

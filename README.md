@@ -54,17 +54,33 @@ pnpm start
 
 URL: http://localhost:3000. Dừng bằng Ctrl+C.
 
+SMS mock chạy ở terminal riêng:
+
+```sh
+pnpm sms
+```
+
+Dừng bằng Ctrl+C. API: [sms-mock/README.md](sms-mock/README.md).
+
 ## Kiểm tra
 
 ```sh
 pnpm typecheck
 pnpm lint
+pnpm test
 ```
+
+Các file test hiện có:
+
+- tests/identity.test.ts
+
+Runner node:test: ok là đạt, not ok là thất bại; mã thoát 0 và fail 0 xác nhận lượt chạy thành công.
 
 ## Phạm vi hiện tại
 
 - Khởi tạo ứng dụng và toàn bộ tài liệu final
 - Database, migration init và seed
+- Xác thực, tài khoản và SMS
 
 doc/ chứa thiết kế final của toàn hệ thống; phạm vi code hiện tại là các phần liệt kê ở trên. Các module còn lại được bổ sung qua PR tiếp theo.
 
