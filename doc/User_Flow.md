@@ -39,7 +39,7 @@ Lễ tân xử lý lịch `PENDING`, gán bác sĩ nếu cần và xác nhận l
 ![UF-04](user-flow/04-xac-nhan.png)
 
 ### UF-05 — Đổi lịch
-Lễ tân đổi bác sĩ hoặc thời gian trên cùng lịch `PENDING`/`CONFIRMED`.
+Lễ tân đổi dịch vụ, bác sĩ hoặc thời gian trên cùng lịch `PENDING`/`CONFIRMED`. Bệnh nhân tự đổi lịch `PENDING` chưa đến giờ; lịch `CONFIRMED` cần liên hệ phòng khám.
 
 ![UF-05](user-flow/05-doi-lich.png)
 
@@ -79,7 +79,7 @@ Người dùng có account `ACTIVE` xác minh OTP và đặt mật khẩu mới.
 ![UF-12](user-flow/12-khoi-phuc-mat-khau.png)
 
 ### UF-13 — Kích hoạt lại tài khoản
-Admin cho phép kích hoạt lại account `DISABLED`; chính chủ xác minh OTP để chuyển lại `ACTIVE`.
+Admin chuyển account `DISABLED` sang `PENDING_ACTIVATION`; chính chủ đăng nhập đúng mật khẩu, xác minh OTP để chuyển lại `ACTIVE`. Admin có thể thu hồi quyền mở lại.
 
 ![UF-13](user-flow/13-kich-hoat-lai.png)
 
@@ -99,19 +99,19 @@ Bác sĩ khai báo khoảng thời gian không sẵn sàng; các lịch bị ả
 
 | User Flow | FR chính | NFR chính |
 | :--- | :--- | :--- |
-| UF-00 Tổng quan lịch hẹn | M02, M03 | NFR-004, NFR-008 |
-| UF-01 Đăng nhập | FR-M01-003, FR-M01-004 | NFR-002, NFR-012 |
-| UF-02 Quản lý dịch vụ & năng lực bác sĩ | FR-M02-001 | NFR-008 |
-| UF-03 Đặt lịch | FR-M01-005, FR-M02-002, FR-M02-003, FR-M02-004, FR-M02-007, FR-M02-008 | NFR-004, NFR-007, NFR-008 |
-| UF-04 Xác nhận lịch | FR-M02-005, FR-M02-007 | NFR-004, NFR-007 |
-| UF-05 Đổi lịch | FR-M02-011, FR-M02-007 | NFR-004, NFR-007 |
-| UF-06 Hủy lịch | FR-M02-010 | NFR-008 |
-| UF-07 Tạo lịch đã xác nhận | FR-M01-005, FR-M02-006, FR-M02-007, FR-M02-008 | NFR-004, NFR-007 |
-| UF-08 Hoàn thành lịch | FR-M02-009 | NFR-008 |
+| UF-00 Tổng quan lịch hẹn | FR-M02-003, FR-M02-005, FR-M02-006, FR-M02-009, FR-M02-010, FR-M02-011, FR-M02-012, FR-M02-013, FR-M03-003 | NFR-002, NFR-006, NFR-007, NFR-008, NFR-010 |
+| UF-01 Đăng nhập | FR-M01-003, FR-M01-004 | NFR-002, NFR-004, NFR-010 |
+| UF-02 Quản lý dịch vụ & năng lực bác sĩ | FR-M02-001 | NFR-002, NFR-010 |
+| UF-03 Đặt lịch | FR-M01-005, FR-M02-002, FR-M02-003, FR-M02-004, FR-M02-007, FR-M02-008 | NFR-002, NFR-006, NFR-007, NFR-009, NFR-010 |
+| UF-04 Xác nhận lịch | FR-M02-005, FR-M02-007 | NFR-002, NFR-006, NFR-007, NFR-008, NFR-010 |
+| UF-05 Đổi lịch | FR-M02-011, FR-M02-007 | NFR-002, NFR-006, NFR-007, NFR-008, NFR-009, NFR-010 |
+| UF-06 Hủy lịch | FR-M02-010 | NFR-002, NFR-007, NFR-008, NFR-010 |
+| UF-07 Tạo lịch đã xác nhận | FR-M01-005, FR-M02-006, FR-M02-007, FR-M02-008 | NFR-002, NFR-006, NFR-007, NFR-008, NFR-009, NFR-010 |
+| UF-08 Hoàn thành lịch | FR-M02-009 | NFR-002, NFR-007, NFR-010 |
 | UF-09 Báo cáo | FR-M04-001 | NFR-001, NFR-002 |
-| UF-10 Đăng ký bệnh nhân | FR-M01-001 | NFR-008, NFR-012, NFR-013 |
-| UF-11 Kích hoạt tài khoản nhân viên | FR-M01-002 | NFR-008, NFR-012, NFR-013 |
-| UF-12 Khôi phục mật khẩu | FR-M01-006 | NFR-008, NFR-012, NFR-013 |
-| UF-13 Kích hoạt lại tài khoản | FR-M01-002 | NFR-008, NFR-013 |
-| UF-14 Quản lý ca làm việc bác sĩ | FR-M03-001, FR-M03-004 | NFR-004, NFR-008 |
-| UF-15 Bác sĩ báo không sẵn sàng | FR-M03-002, FR-M03-004 | NFR-008 |
+| UF-10 Đăng ký bệnh nhân | FR-M01-001 | NFR-002, NFR-004, NFR-005, NFR-010 |
+| UF-11 Kích hoạt tài khoản nhân viên | FR-M01-002 | NFR-002, NFR-004, NFR-005, NFR-010 |
+| UF-12 Khôi phục mật khẩu | FR-M01-006 | NFR-002, NFR-004, NFR-005, NFR-010 |
+| UF-13 Kích hoạt lại tài khoản | FR-M01-002 | NFR-002, NFR-005, NFR-010 |
+| UF-14 Quản lý ca làm việc bác sĩ | FR-M03-001, FR-M03-004 | NFR-002, NFR-006, NFR-010 |
+| UF-15 Bác sĩ báo không sẵn sàng | FR-M03-002, FR-M03-004 | NFR-002, NFR-010 |

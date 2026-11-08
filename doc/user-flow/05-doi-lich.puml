@@ -6,11 +6,21 @@ skinparam roundcorner 0
 skinparam conditionStyle InsideDiamond
 skinparam conditionEndStyle diamond
 start
-:Lễ tân chọn lịch PENDING/CONFIRMED;
-:Chọn bác sĩ hoặc thời gian mới;
+:Chọn lịch hẹn cần đổi;
+if (Bệnh nhân tự đổi?) then (Có)
+  if (Lịch PENDING chưa đến giờ?) then (Có)
+  else (Không)
+    :Hiện dialog yêu cầu liên hệ phòng khám;
+    stop
+  endif
+else (Lễ tân)
+  :Chọn lịch PENDING/CONFIRMED;
+endif
+:Chọn dịch vụ, bác sĩ hoặc thời gian mới;
 :Hệ thống kiểm tra lại điều kiện lịch;
 if (Hợp lệ?) then (Có)
   :Cập nhật trên cùng lịch hẹn;
+  :Ghi lịch sử thay đổi;
 else (Không)
   :Giữ nguyên lịch hiện tại;
 endif

@@ -7,7 +7,7 @@
 | Nội dung | Quy ước |
 | --- | --- |
 | DBMS | PostgreSQL |
-| Khóa chính | `INTEGER` |
+| Khóa chính | `INTEGER`; `auth_sessions` dùng `BIGINT`, `otp_challenges` dùng `UUID` |
 | Thời điểm nghiệp vụ | `TIMESTAMPTZ` |
 | Múi giờ hiển thị | `Asia/Ho_Chi_Minh` |
 | Khoảng thời gian lịch | `[start_at, end_at)` |
@@ -24,9 +24,9 @@ Lưu danh tính người dùng. Một người chỉ có một bản ghi `users`
 | --- | --- | --- | --- | --- |
 | `user_id` | INTEGER | PK | Không | Mã người dùng |
 | `full_name` | VARCHAR(120) |  | Không | Họ tên |
-| `birth_date` | DATE | Bắt buộc khi có role `PATIENT` | Có | Ngày sinh |
+| `birth_date` | DATE | Bắt buộc khi tạo hoặc cập nhật hồ sơ | Có | Ngày sinh từ 01/01/1900 đến hiện tại; cho phép NULL đối với dữ liệu cũ |
 | `phone` | VARCHAR(20) | UNIQUE | Không | Số điện thoại chính |
-| `email` | VARCHAR(120) |  | Có | Email liên hệ |
+| `email` | VARCHAR(120) | UQ, không phân biệt hoa thường | Có | Email liên hệ |
 
 ## 3. `user_roles`
 
@@ -113,6 +113,8 @@ Quan hệ nhiều-nhiều giữa Bác sĩ và Dịch vụ.
 | `actor_user_id` | INTEGER | FK → `users.user_id` | Không | Người thực hiện |
 | `old_doctor_id` | INTEGER | FK → `users.user_id` | Có | Bác sĩ trước thay đổi |
 | `new_doctor_id` | INTEGER | FK → `users.user_id` | Có | Bác sĩ sau thay đổi |
+| `old_service_id` | INTEGER | FK → `services.service_id` | Có | Dịch vụ trước thay đổi |
+| `new_service_id` | INTEGER | FK → `services.service_id` | Có | Dịch vụ sau thay đổi |
 | `changed_at` | TIMESTAMPTZ |  | Không | Thời điểm ghi nhận thay đổi |
 | `old_status` | VARCHAR(20) |  | Có | Trạng thái trước |
 | `new_status` | VARCHAR(20) |  | Không | Trạng thái sau |
@@ -130,8 +132,40 @@ Quan hệ nhiều-nhiều giữa Bác sĩ và Dịch vụ.
 | `recipient_user_id` | INTEGER | FK → `users.user_id` | Không | Người nhận |
 | `content` | TEXT |  | Không | Nội dung thông báo |
 | `created_at` | TIMESTAMPTZ |  | Không | Thời điểm tạo |
+| `read_at` | TIMESTAMPTZ |  | Có | Thời điểm đọc thông báo |
 
-## 12. Quan hệ chính
+## 12. `auth_sessions`
+
+Lưu phiên đăng nhập của account.
+
+| Thuộc tính | Kiểu dữ liệu | Khóa / Ràng buộc | Null | Mô tả |
+| --- | --- | --- | --- | --- |
+| `session_id` | BIGINT | PK | Không | Mã phiên |
+| `account_id` | INTEGER | FK → `accounts.account_id` | Không | Chủ phiên |
+| `token_hash` | VARCHAR(128) | UNIQUE | Không | Mã phiên đã băm |
+| `created_at` | TIMESTAMPTZ |  | Không | Thời điểm tạo |
+| `expires_at` | TIMESTAMPTZ |  | Không | Thời điểm hết hạn |
+| `revoked_at` | TIMESTAMPTZ |  | Có | Thời điểm thu hồi |
+
+## 13. `otp_challenges`
+
+Lưu yêu cầu xác minh OTP.
+
+| Thuộc tính | Kiểu dữ liệu | Khóa / Ràng buộc | Null | Mô tả |
+| --- | --- | --- | --- | --- |
+| `challenge_id` | UUID | PK | Không | Mã yêu cầu xác minh |
+| `account_id` | INTEGER | FK → `accounts.account_id` | Có | Account liên quan |
+| `phone` | VARCHAR(20) |  | Không | Số điện thoại nhận mã |
+| `purpose` | VARCHAR(30) | CHECK theo mục đích xác minh | Không | Mục đích xác minh |
+| `code_digest` | VARCHAR(128) |  | Không | Giá trị HMAC của mã OTP |
+| `created_at` | TIMESTAMPTZ |  | Không | Thời điểm tạo |
+| `expires_at` | TIMESTAMPTZ |  | Không | Thời điểm hết hạn |
+| `attempt_count` | INTEGER | DEFAULT `0` | Không | Số lần thử xác minh |
+| `consumed_at` | TIMESTAMPTZ |  | Có | Thời điểm sử dụng hoặc vô hiệu hóa |
+
+**Mục đích xác minh:** `ACTIVATE`, `RECOVER_PASSWORD`, `REACTIVATE`.
+
+## 14. Quan hệ chính
 
 - `users` 1 — N `user_roles`.
 - `users` 1 — 0..1 `accounts`.
@@ -141,3 +175,6 @@ Quan hệ nhiều-nhiều giữa Bác sĩ và Dịch vụ.
 - Service 1 — N `appointments`.
 - Doctor 1 — N `doctor_shifts` và `doctor_unavailability`.
 - Appointment 1 — N `appointment_history` và `notifications`.
+- Service 0..1 — N `appointment_history` qua `old_service_id` và `new_service_id`.
+- Account 1 — N `auth_sessions`.
+- Account 0..1 — N `otp_challenges`.

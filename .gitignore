@@ -1,32 +1,20 @@
-# IDE & Editors
+node_modules/
+/.next/
+/out/
+/src/generated/
+/next-env.d.ts
+*.tsbuildinfo
+
+.env
+.env.*
+!.env.example
+
+*.log
+
 .vscode/
 .idea/
 *.swp
 *.swo
-
-# OS generated files
-Thumbs.db
-ehthumbs.db
-Desktop.ini
-$RECYCLE.BIN/
 .DS_Store
-.AppleDouble
-.LSOverride
-
-# Node & Build artifacts
-node_modules/
-dist/
-build/
-.next/
-out/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# Environment & Temp
-.env
-.env.local
-.env.*.local
-*.log
-temp/
-tmp/
+Thumbs.db
+Desktop.ini
