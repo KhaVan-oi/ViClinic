@@ -1,0 +1,201 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  userId    Int       @id @default(autoincrement()) @map("user_id")
+  fullName  String    @map("full_name") @db.VarChar(120)
+  birthDate DateTime? @map("birth_date") @db.Date
+  phone     String    @unique @db.VarChar(20)
+  email     String?   @db.VarChar(120)
+
+  roles                 UserRole[]
+  account               Account?
+  doctorServices        DoctorService[]
+  doctorShifts          DoctorShift[]
+  doctorUnavailability  DoctorUnavailability[]
+  patientAppointments   Appointment[]          @relation("PatientAppointments")
+  doctorAppointments    Appointment[]          @relation("DoctorAppointments")
+  actedHistory          AppointmentHistory[]   @relation("HistoryActor")
+  oldDoctorHistory      AppointmentHistory[]   @relation("HistoryOldDoctor")
+  newDoctorHistory      AppointmentHistory[]   @relation("HistoryNewDoctor")
+  notifications         Notification[]
+
+  @@map("users")
+}
+
+model UserRole {
+  userId Int    @map("user_id")
+  role   String @db.VarChar(30)
+
+  user User @relation(fields: [userId], references: [userId], onDelete: Cascade)
+
+  @@id([userId, role])
+  @@map("user_roles")
+}
+
+model Account {
+  accountId    Int     @id @default(autoincrement()) @map("account_id")
+  userId       Int     @unique @map("user_id")
+  passwordHash String? @map("password_hash") @db.VarChar(255)
+  status       String  @db.VarChar(30)
+
+  user          User           @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  sessions      AuthSession[]
+  otpChallenges OtpChallenge[]
+
+  @@map("accounts")
+}
+
+model Service {
+  serviceId       Int     @id @default(autoincrement()) @map("service_id")
+  name            String  @db.VarChar(120)
+  durationMinutes Int     @map("duration_minutes")
+  isActive        Boolean @default(true) @map("is_active")
+
+  doctorServices DoctorService[]
+  appointments   Appointment[]
+  oldHistory AppointmentHistory[] @relation("HistoryOldService")
+  newHistory AppointmentHistory[] @relation("HistoryNewService")
+
+  @@map("services")
+}
+
+model DoctorService {
+  doctorId  Int @map("doctor_id")
+  serviceId Int @map("service_id")
+
+  doctor  User    @relation(fields: [doctorId], references: [userId], onDelete: Cascade)
+  service Service @relation(fields: [serviceId], references: [serviceId], onDelete: Cascade)
+
+  @@id([doctorId, serviceId])
+  @@index([serviceId, doctorId], map: "idx_doctor_services_service_doctor")
+  @@map("doctor_services")
+}
+
+model DoctorShift {
+  shiftId  Int      @id @default(autoincrement()) @map("shift_id")
+  doctorId Int      @map("doctor_id")
+  startAt  DateTime @map("start_at") @db.Timestamptz(6)
+  endAt    DateTime @map("end_at") @db.Timestamptz(6)
+
+  doctor User @relation(fields: [doctorId], references: [userId], onDelete: Cascade)
+
+  @@index([doctorId, startAt], map: "idx_doctor_shifts_doctor_start")
+  @@map("doctor_shifts")
+}
+
+model DoctorUnavailability {
+  unavailabilityId Int      @id @default(autoincrement()) @map("unavailability_id")
+  doctorId         Int      @map("doctor_id")
+  startAt          DateTime @map("start_at") @db.Timestamptz(6)
+  endAt            DateTime @map("end_at") @db.Timestamptz(6)
+
+  doctor User @relation(fields: [doctorId], references: [userId], onDelete: Cascade)
+
+  @@index([doctorId, startAt], map: "idx_doctor_unavailability_doctor_start")
+  @@map("doctor_unavailability")
+}
+
+model Appointment {
+  appointmentId Int      @id @default(autoincrement()) @map("appointment_id")
+  patientId     Int      @map("patient_id")
+  serviceId     Int      @map("service_id")
+  doctorId      Int?     @map("doctor_id")
+  startAt       DateTime @map("start_at") @db.Timestamptz(6)
+  endAt         DateTime @map("end_at") @db.Timestamptz(6)
+  status        String   @db.VarChar(20)
+
+  patient       User                 @relation("PatientAppointments", fields: [patientId], references: [userId], onDelete: Restrict)
+  service       Service              @relation(fields: [serviceId], references: [serviceId], onDelete: Restrict)
+  doctor        User?                @relation("DoctorAppointments", fields: [doctorId], references: [userId], onDelete: Restrict)
+  history       AppointmentHistory[]
+  notifications Notification[]
+
+  @@index([patientId, startAt], map: "idx_appointments_patient_start")
+  @@index([doctorId, startAt], map: "idx_appointments_doctor_start")
+  @@index([serviceId, startAt], map: "idx_appointments_service_start")
+  @@index([status, startAt], map: "idx_appointments_status_start")
+  @@index([startAt], map: "idx_appointments_start")
+  @@map("appointments")
+}
+
+model AppointmentHistory {
+  historyId     Int       @id @default(autoincrement()) @map("history_id")
+  appointmentId Int       @map("appointment_id")
+  actorUserId   Int       @map("actor_user_id")
+  oldDoctorId   Int?      @map("old_doctor_id")
+  newDoctorId   Int?      @map("new_doctor_id")
+  oldServiceId Int? @map("old_service_id")
+  newServiceId Int? @map("new_service_id")
+  changedAt     DateTime  @map("changed_at") @db.Timestamptz(6)
+  oldStatus     String?   @map("old_status") @db.VarChar(20)
+  newStatus     String    @map("new_status") @db.VarChar(20)
+  oldStartAt    DateTime? @map("old_start_at") @db.Timestamptz(6)
+  newStartAt    DateTime? @map("new_start_at") @db.Timestamptz(6)
+  oldEndAt      DateTime? @map("old_end_at") @db.Timestamptz(6)
+  newEndAt      DateTime? @map("new_end_at") @db.Timestamptz(6)
+
+  appointment Appointment @relation(fields: [appointmentId], references: [appointmentId], onDelete: Cascade)
+  actor       User        @relation("HistoryActor", fields: [actorUserId], references: [userId], onDelete: Restrict)
+  oldDoctor   User?       @relation("HistoryOldDoctor", fields: [oldDoctorId], references: [userId], onDelete: Restrict)
+  newDoctor   User?       @relation("HistoryNewDoctor", fields: [newDoctorId], references: [userId], onDelete: Restrict)
+  oldService Service? @relation("HistoryOldService", fields:[oldServiceId],references:[serviceId],onDelete:Restrict)
+  newService Service? @relation("HistoryNewService", fields:[newServiceId],references:[serviceId],onDelete:Restrict)
+
+  @@index([appointmentId, changedAt], map: "idx_appointment_history_appt_changed")
+  @@map("appointment_history")
+}
+
+model Notification {
+  notificationId  Int      @id @default(autoincrement()) @map("notification_id")
+  appointmentId   Int      @map("appointment_id")
+  recipientUserId Int      @map("recipient_user_id")
+  content         String   @db.Text
+  createdAt       DateTime @map("created_at") @db.Timestamptz(6)
+  readAt          DateTime? @map("read_at") @db.Timestamptz(6)
+
+  appointment Appointment @relation(fields: [appointmentId], references: [appointmentId], onDelete: Cascade)
+  recipient   User        @relation(fields: [recipientUserId], references: [userId], onDelete: Cascade)
+
+  @@index([recipientUserId, createdAt], map: "idx_notifications_recipient_created")
+  @@map("notifications")
+}
+
+model AuthSession {
+  sessionId BigInt    @id @default(autoincrement()) @map("session_id")
+  accountId Int       @map("account_id")
+  tokenHash String    @unique @map("token_hash") @db.VarChar(128)
+  createdAt DateTime  @map("created_at") @db.Timestamptz(6)
+  expiresAt DateTime  @map("expires_at") @db.Timestamptz(6)
+  revokedAt DateTime? @map("revoked_at") @db.Timestamptz(6)
+
+  account Account @relation(fields: [accountId], references: [accountId], onDelete: Cascade)
+
+  @@index([accountId], map: "idx_auth_sessions_account")
+  @@map("auth_sessions")
+}
+
+model OtpChallenge {
+  challengeId  String    @id @map("challenge_id") @db.Uuid
+  accountId    Int?      @map("account_id")
+  phone        String    @db.VarChar(20)
+  purpose      String    @db.VarChar(30)
+  codeDigest   String    @map("code_digest") @db.VarChar(128)
+  createdAt    DateTime  @map("created_at") @db.Timestamptz(6)
+  expiresAt    DateTime  @map("expires_at") @db.Timestamptz(6)
+  attemptCount Int       @default(0) @map("attempt_count")
+  consumedAt   DateTime? @map("consumed_at") @db.Timestamptz(6)
+
+  account Account? @relation(fields: [accountId], references: [accountId], onDelete: Cascade)
+
+  @@index([phone, purpose, createdAt], map: "idx_otp_challenges_phone_purpose")
+  @@index([accountId, purpose], map: "idx_otp_challenges_account_purpose")
+  @@map("otp_challenges")
+}
+
