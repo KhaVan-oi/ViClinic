@@ -1,19 +1,9 @@
 @startuml
 
-title A08. ERD - ViClinic
-
-top to bottom direction
-hide circle
+title ERD - ViClinic
 
 skinparam linetype ortho
-skinparam shadowing false
-skinparam roundcorner 4
-skinparam classAttributeIconSize 0
-skinparam nodesep 90
-skinparam ranksep 110
-skinparam ArrowColor #333333
-skinparam ArrowThickness 1.1
-skinparam ArrowFontSize 10
+hide circle
 
 entity "doctor_shifts" as DOCTOR_SHIFTS {
   *shift_id : INTEGER <<PK>>
@@ -44,13 +34,36 @@ entity "accounts" as ACCOUNTS {
   status : VARCHAR(30)
 }
 
+entity "auth_sessions" as AUTH_SESSIONS {
+  *session_id : BIGINT <<PK>>
+  --
+  account_id : INTEGER <<FK>>
+  token_hash : VARCHAR(128) <<UQ>>
+  created_at : TIMESTAMPTZ
+  expires_at : TIMESTAMPTZ
+  revoked_at : TIMESTAMPTZ NULL
+}
+
+entity "otp_challenges" as OTP_CHALLENGES {
+  *challenge_id : UUID <<PK>>
+  --
+  account_id : INTEGER <<FK, NULL>>
+  phone : VARCHAR(20)
+  purpose : VARCHAR(30)
+  code_digest : VARCHAR(128)
+  created_at : TIMESTAMPTZ
+  expires_at : TIMESTAMPTZ
+  attempt_count : INTEGER
+  consumed_at : TIMESTAMPTZ NULL
+}
+
 entity "users" as USERS {
   *user_id : INTEGER <<PK>>
   --
   full_name : VARCHAR(120)
   birth_date : DATE NULL
   phone : VARCHAR(20) <<UQ>>
-  email : VARCHAR(120) NULL
+  email : VARCHAR(120) <<UQ>> NULL
 }
 
 entity "doctor_services" as DOCTOR_SERVICES {
@@ -65,6 +78,8 @@ entity "appointment_history" as APPOINTMENT_HISTORY {
   actor_user_id : INTEGER <<FK>>
   old_doctor_id : INTEGER <<FK, NULL>>
   new_doctor_id : INTEGER <<FK, NULL>>
+  old_service_id : INTEGER <<FK, NULL>>
+  new_service_id : INTEGER <<FK, NULL>>
   changed_at : TIMESTAMPTZ
   old_status : VARCHAR(20) NULL
   new_status : VARCHAR(20)
@@ -92,6 +107,7 @@ entity "notifications" as NOTIFICATIONS {
   recipient_user_id : INTEGER <<FK>>
   content : TEXT
   created_at : TIMESTAMPTZ
+  read_at : TIMESTAMPTZ NULL
 }
 
 entity "services" as SERVICES {
@@ -102,46 +118,24 @@ entity "services" as SERVICES {
   is_active : BOOLEAN
 }
 
-' ================= LƯỚI ẨN =================
-' Hàng 1
-DOCTOR_SHIFTS -[hidden]right- DOCTOR_UNAVAILABILITY
-DOCTOR_UNAVAILABILITY -[hidden]right- USER_ROLES
+DOCTOR_SHIFTS }o--|| USERS : "doctor"
+DOCTOR_UNAVAILABILITY }o--|| USERS : "doctor"
+USER_ROLES }o--|| USERS : "user"
 
-' Hàng 2 (doctor_services nằm ở cột 4, cách xa users)
-ACCOUNTS -[hidden]right- USERS
-USERS -[hidden]right----- DOCTOR_SERVICES
+ACCOUNTS |o--|| USERS : "user"
+ACCOUNTS ||--o{ AUTH_SESSIONS : "account"
+ACCOUNTS |o--o{ OTP_CHALLENGES : "account"
+USERS ||--o{ DOCTOR_SERVICES : "doctor"
 
-' Hàng 3
-APPOINTMENT_HISTORY -[hidden]right- APPOINTMENTS
-APPOINTMENTS -[hidden]right- NOTIFICATIONS
+USERS ||--o{ APPOINTMENT_HISTORY : "actor / doctor"
+USERS ||--o{ APPOINTMENTS : "patient / doctor"
+USERS ||--o{ NOTIFICATIONS : "recipient"
 
-' Cột dọc
-DOCTOR_SHIFTS -[hidden]down- ACCOUNTS
-ACCOUNTS -[hidden]down- APPOINTMENT_HISTORY
-DOCTOR_UNAVAILABILITY -[hidden]down- USERS
-USER_ROLES -[hidden]down--- NOTIFICATIONS
+APPOINTMENT_HISTORY }o--|| APPOINTMENTS : "appointment"
+APPOINTMENTS ||--o{ NOTIFICATIONS : "appointment"
 
-' ================= QUAN HỆ =================
-' Hàng 1 -> users
-DOCTOR_SHIFTS }o-down-|| USERS : "doctor"
-DOCTOR_UNAVAILABILITY }o-down-|| USERS : "doctor"
-USER_ROLES }o-down-|| USERS : "user"
-
-' Hàng 2
-ACCOUNTS |o-right-|| USERS : "user"
-USERS ||-right-o{ DOCTOR_SERVICES : "doctor"
-
-' users -> hàng 3
-USERS ||-down-o{ APPOINTMENT_HISTORY : "actor / doctor"
-USERS ||-down-o{ APPOINTMENTS : "patient / doctor"
-USERS ||-down-o{ NOTIFICATIONS : "recipient"
-
-' Hàng 3
-APPOINTMENT_HISTORY }o-right-|| APPOINTMENTS : "appointment"
-APPOINTMENTS ||-right-o{ NOTIFICATIONS : "appointment"
-
-' services nằm hàng 4, cột 4 (dưới doctor_services)
-APPOINTMENTS }o-down-|| SERVICES : "service"
-DOCTOR_SERVICES }o-down-|| SERVICES : "service"
+APPOINTMENTS }o--|| SERVICES : "service"
+DOCTOR_SERVICES }o--|| SERVICES : "service"
+APPOINTMENT_HISTORY }o--o| SERVICES : "old_service /\nnew_service"
 
 @enduml

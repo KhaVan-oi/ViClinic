@@ -8,12 +8,14 @@ skinparam conditionEndStyle diamond
 start
 :Admin chọn account DISABLED;
 :Cho phép kích hoạt lại;
+:Chuyển account sang PENDING_ACTIVATION;
+:Chính chủ đăng nhập đúng mật khẩu;
 :Gửi OTP kích hoạt lại đến SĐT;
 :Chính chủ nhập OTP;
 if (OTP hợp lệ?) then (Có)
   :Chuyển account sang ACTIVE;
 else (Không)
-  :Giữ account DISABLED;
+  :Giữ account PENDING_ACTIVATION;
 endif
 stop
 @enduml

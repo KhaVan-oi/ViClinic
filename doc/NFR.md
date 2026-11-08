@@ -20,7 +20,7 @@
 | Mã | Nội dung yêu cầu | Chỉ tiêu cụ thể |
 | --- | --- | --- |
 | NFR-006 | Không lưu lịch chồng lấn | Sau thao tác tạo, xác nhận hoặc đổi lịch, không tồn tại hai lịch `PENDING`/`CONFIRMED` bị overlap cho cùng bệnh nhân. Với bác sĩ, `PENDING` đã gán bác sĩ và `CONFIRMED` là các lịch giữ slot và không được overlap. Với hai yêu cầu xung đột đồng thời, tối đa một yêu cầu được ghi thành công. |
-| NFR-007 | Đủ dấu vết thay đổi | 100% thay đổi trạng thái, bác sĩ hoặc thời gian thành công phải có người thực hiện và thời điểm; thao tác bị từ chối không tạo lịch sử. |
+| NFR-007 | Đủ dấu vết thay đổi | 100% thay đổi trạng thái, dịch vụ, bác sĩ hoặc thời gian thành công phải có người thực hiện và thời điểm; thao tác bị từ chối không tạo lịch sử. |
 | NFR-008 | Thông báo lịch hẹn không phụ thuộc kênh ngoài | Các sự kiện xác nhận, đổi và hủy lịch phải có thông báo trong ứng dụng; email/SMS thông báo lịch hẹn không phải điều kiện để hoàn tất workflow. |
 
 ### 3.2.4. Yêu cầu về khả dụng (Usability)
