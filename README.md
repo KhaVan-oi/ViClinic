@@ -73,6 +73,7 @@ pnpm test
 Các file test hiện có:
 
 - tests/identity.test.ts
+- tests/scheduling.test.ts
 
 Runner node:test: ok là đạt, not ok là thất bại; mã thoát 0 và fail 0 xác nhận lượt chạy thành công.
 
@@ -81,6 +82,7 @@ Runner node:test: ok là đạt, not ok là thất bại; mã thoát 0 và fail 
 - Khởi tạo ứng dụng và toàn bộ tài liệu final
 - Database, migration init và seed
 - Xác thực, tài khoản và SMS
+- Ca làm việc, lịch bận và giờ trống
 
 doc/ chứa thiết kế final của toàn hệ thống; phạm vi code hiện tại là các phần liệt kê ở trên. Các module còn lại được bổ sung qua PR tiếp theo.
 
