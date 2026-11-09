@@ -76,6 +76,7 @@ Các file test hiện có:
 - tests/identity.test.ts
 - tests/notifications.test.ts
 - tests/patients.test.ts
+- tests/reports.test.ts
 - tests/scheduling.test.ts
 
 Runner node:test: ok là đạt, not ok là thất bại; mã thoát 0 và fail 0 xác nhận lượt chạy thành công.
@@ -89,6 +90,7 @@ Runner node:test: ok là đạt, not ok là thất bại; mã thoát 0 và fail 
 - Dịch vụ và phân công bác sĩ
 - Ghi nhận và API thông báo
 - Đặt lịch, chuyển trạng thái và hồ sơ bệnh nhân
+- Truy vấn thống kê và xuất báo cáo
 
 doc/ chứa thiết kế final của toàn hệ thống; phạm vi code hiện tại là các phần liệt kê ở trên. Các module còn lại được bổ sung qua PR tiếp theo.
 
