@@ -83,6 +83,7 @@ Runner node:test: ok là đạt, not ok là thất bại; mã thoát 0 và fail 
 - Database, migration init và seed
 - Xác thực, tài khoản và SMS
 - Ca làm việc, lịch bận và giờ trống
+- Dịch vụ và phân công bác sĩ
 
 doc/ chứa thiết kế final của toàn hệ thống; phạm vi code hiện tại là các phần liệt kê ở trên. Các module còn lại được bổ sung qua PR tiếp theo.
 
