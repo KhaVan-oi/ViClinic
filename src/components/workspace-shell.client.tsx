@@ -46,7 +46,7 @@ export function WorkspaceShell({ session, role, kind, children }: {
     return () => desktop.removeEventListener("change", closeOnDesktop);
   }, [close]);
 
-  const navigation = [...navItems, { href: notificationHref, label: "Thông báo", Icon: Bell }].filter(item => ["/", "/activate", "/activate/complete", "/activate/verify", "/admin", "/admin/accounts", "/admin/accounts/[accountId]", "/admin/reactivation", "/admin/roles", "/admin/staff/new", "/choose-role", "/doctor", "/login", "/manager", "/patient", "/reactivate", "/reception", "/recover", "/recover/complete", "/recover/verify", "/register", "/register/complete", "/register/verify"].includes(item.href));
+  const navigation = [...navItems, { href: notificationHref, label: "Thông báo", Icon: Bell }].filter(item => ["/", "/activate", "/activate/complete", "/activate/verify", "/admin", "/admin/accounts", "/admin/accounts/[accountId]", "/admin/reactivation", "/admin/roles", "/admin/staff/new", "/choose-role", "/doctor", "/doctors", "/login", "/manager", "/patient", "/patient/book", "/reactivate", "/reception", "/recover", "/recover/complete", "/recover/verify", "/register", "/register/complete", "/register/verify", "/services"].includes(item.href));
   const activeHref = navigation.filter(item => pathname === item.href ||
     (item.href !== rootHref && pathname.startsWith(`${item.href}/`)))
     .sort((a, b) => b.href.length - a.href.length)[0]?.href;
