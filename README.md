@@ -94,6 +94,7 @@ Runner node:test: ok là đạt, not ok là thất bại; mã thoát 0 và fail 
 - Đăng nhập, tài khoản và quản trị
 - Trang công khai và chọn dịch vụ, bác sĩ, giờ khám
 - Lịch phòng khám và quản lý ca làm việc
+- Bàn làm việc và xử lý lịch hẹn
 
 doc/ chứa thiết kế final của toàn hệ thống; phạm vi code hiện tại là các phần liệt kê ở trên. Các module còn lại được bổ sung qua PR tiếp theo.
 
