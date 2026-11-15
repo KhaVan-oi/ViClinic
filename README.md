@@ -72,8 +72,11 @@ pnpm test
 
 Các file test hiện có:
 
+- tests/appointments.test.ts
 - tests/identity.test.ts
 - tests/notifications.test.ts
+- tests/patients.test.ts
+- tests/reports.test.ts
 - tests/scheduling.test.ts
 
 Runner node:test: ok là đạt, not ok là thất bại; mã thoát 0 và fail 0 xác nhận lượt chạy thành công.
@@ -86,6 +89,12 @@ Runner node:test: ok là đạt, not ok là thất bại; mã thoát 0 và fail 
 - Ca làm việc, lịch bận và giờ trống
 - Dịch vụ và phân công bác sĩ
 - Ghi nhận và API thông báo
+- Đặt lịch, chuyển trạng thái và hồ sơ bệnh nhân
+- Truy vấn thống kê và xuất báo cáo
+- Đăng nhập, tài khoản và quản trị
+- Trang công khai và chọn dịch vụ, bác sĩ, giờ khám
+- Lịch phòng khám và quản lý ca làm việc
+- Bàn làm việc và xử lý lịch hẹn
 
 doc/ chứa thiết kế final của toàn hệ thống; phạm vi code hiện tại là các phần liệt kê ở trên. Các module còn lại được bổ sung qua PR tiếp theo.
 

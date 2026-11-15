@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 
@@ -13,7 +13,7 @@ export default function ErrorPage({ reset }: {
         Vui lòng thử lại hoặc trở về trang làm việc để mở lại chức năng.
       </p>
       <div className="flex flex-wrap items-center gap-3">
-        <Link href="/" className="public-secondary">Về trang chủ</Link>
+        <Link href="/choose-role" className="public-secondary">Về trang làm việc</Link>
         <button type="button" onClick={reset} className="public-primary">Thử lại</button>
       </div>
     </section>
