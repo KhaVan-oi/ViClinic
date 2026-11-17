@@ -6,6 +6,7 @@ import { formatClinicIsoDate } from "@/lib/dates";
 
 import { useActionState, useState } from "react";
 import { LogOut, UserRound } from "lucide-react";
+import { NotificationBell } from "@/components/notification-bell.client";
 import Link from "next/link";
 import type { SessionView } from "@/modules/identity/contracts";
 import { formatRoleLabel, getHomePathForContext } from "@/config/business";
@@ -20,13 +21,13 @@ export function ContextSwitcherBar({ session, showHomeLink = false }: { session:
   const [profileResult, saveProfile] = useActionState(
     (_: { error?: string; saved?: boolean } | null, data: FormData) => updateOwnProfileAction(data), null,
   );
-
+  const notifications = `${getHomePathForContext(session.activeContext)}/notifications`;
   return (
     <div className="flex shrink-0 items-center justify-end gap-1 sm:gap-3">
       {showHomeLink && <Link href={getHomePathForContext(session.activeContext)} className="min-h-11 inline-flex shrink-0 items-center whitespace-nowrap text-sm font-semibold text-[#0A6E63]">
         <span className="sm:hidden">{personal ? "Lịch khám" : "Công việc"}</span><span className="hidden sm:inline">{personal ? "Lịch khám của tôi" : "Vào làm việc"}</span>
       </Link>}
-
+      <NotificationBell key={`${session.phone}:${session.activeContext}`} href={notifications} userKey={`${session.phone}:${session.activeContext}`} />
       <button type="button" aria-label="Tài khoản" title="Tài khoản" aria-haspopup="dialog" aria-expanded={accountOpen} onClick={() => setAccountOpen(true)} className="flex min-h-11 min-w-11 items-center justify-center rounded-md hover:bg-slate-100">
           <UserRound className="h-5 w-5" aria-hidden="true" />
       </button>
