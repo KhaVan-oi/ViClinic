@@ -46,7 +46,7 @@ export function WorkspaceShell({ session, role, kind, children }: {
     return () => desktop.removeEventListener("change", closeOnDesktop);
   }, [close]);
 
-  const navigation = [...navItems, { href: notificationHref, label: "Thông báo", Icon: Bell }].filter(item => ["/", "/activate", "/activate/complete", "/activate/verify", "/admin", "/admin/accounts", "/admin/accounts/[accountId]", "/admin/notifications", "/admin/reactivation", "/admin/roles", "/admin/staff/new", "/choose-role", "/doctor", "/doctor/appointments", "/doctor/appointments/[appointmentId]", "/doctor/calendar", "/doctor/notifications", "/doctor/unavailability", "/doctors", "/login", "/manager", "/manager/calendar", "/manager/doctor-services", "/manager/notifications", "/manager/reports", "/manager/services", "/manager/shifts", "/patient", "/patient/appointments", "/patient/appointments/[appointmentId]", "/patient/book", "/patient/notifications", "/reactivate", "/reception", "/reception/appointments", "/reception/appointments/[appointmentId]", "/reception/appointments/new", "/reception/calendar", "/reception/history", "/reception/notifications", "/reception/patients", "/reception/patients/[userId]", "/recover", "/recover/complete", "/recover/verify", "/register", "/register/complete", "/register/verify", "/services"].includes(item.href));
+  const navigation = [...navItems, { href: notificationHref, label: "Thông báo", Icon: Bell }];
   const activeHref = navigation.filter(item => pathname === item.href ||
     (item.href !== rootHref && pathname.startsWith(`${item.href}/`)))
     .sort((a, b) => b.href.length - a.href.length)[0]?.href;
