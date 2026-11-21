@@ -12,7 +12,8 @@
     "db:migrate": "prisma migrate deploy",
     "db:seed": "tsx prisma/seed/index.ts",
     "sms": "sms-dev start",
-    "test": "tsx --test tests/*.test.ts"
+    "test": "tsx --test tests/*.test.ts && pnpm test:pdf",
+    "test:pdf": "node --conditions=react-server --import tsx --test tests/pdf/*.test.ts"
   },
   "dependencies": {
     "@date-fns/tz": "^1.2.0",
