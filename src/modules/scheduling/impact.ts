@@ -37,31 +37,45 @@ export async function previewShiftChangeImpactInternal(input: {
   startTime: string;
   endTime: string;
 }, client: DbTransactionClient = db): Promise<ScheduleImpactPreviewDto> {
-  const dayStart = getClinicDayStart(input.date);
-  const dayEndExclusive = getClinicDayEndExclusive(input.date);
   const proposedStart = parseClinicDateTime(`${input.date} ${input.startTime}`);
   const proposedEnd = parseClinicDateTime(`${input.date} ${input.endTime}`);
 
-  const [existingShifts, unavailabilities, activeAppointments] = await Promise.all([
+  // L1: khi sửa ca, phải xét cả khoảng thời gian của ca CŨ (có thể ở ngày khác),
+  // nếu không lịch hẹn ở ngày cũ sẽ mất ca mà không được cảnh báo.
+  const original = input.shiftId
+    ? await client.doctorShift.findUnique({ where: { shiftId: input.shiftId } })
+    : null;
+  const windowStarts = [getClinicDayStart(input.date)];
+  const windowEnds = [getClinicDayEndExclusive(input.date)];
+  if (original) {
+    windowStarts.push(original.startAt);
+    windowEnds.push(original.endAt);
+  }
+  const rangeStart = new Date(Math.min(...windowStarts.map(d => d.getTime())));
+  const rangeEnd = new Date(Math.max(...windowEnds.map(d => d.getTime())));
+  const inspectedWindows = windowStarts.map((startAt, i) => ({ startAt, endAt: windowEnds[i] }));
+
+  const [existingShifts, unavailabilities, candidateAppointments] = await Promise.all([
     client.doctorShift.findMany({
       where: {
         doctorId: input.doctorId,
-        startAt: { lt: dayEndExclusive },
-        endAt: { gt: dayStart },
+        startAt: { lt: rangeEnd },
+        endAt: { gt: rangeStart },
       },
     }),
     client.doctorUnavailability.findMany({
       where: {
         doctorId: input.doctorId,
-        startAt: { lt: dayEndExclusive },
-        endAt: { gt: dayStart },
+        startAt: { lt: rangeEnd },
+        endAt: { gt: rangeStart },
       },
     }),
     client.appointment.findMany({
       where: {
         doctorId: input.doctorId,
         status: { in: ["PENDING", "CONFIRMED"] },
-        startAt: { gte: dayStart, lt: dayEndExclusive },
+        startAt: { lt: rangeEnd },
+        endAt: { gt: rangeStart },
       },
       include: {
         service: true,
@@ -70,6 +84,9 @@ export async function previewShiftChangeImpactInternal(input: {
       orderBy: [{ startAt: "asc" }, { appointmentId: "asc" }],
     }),
   ]);
+  const activeAppointments = candidateAppointments.filter(appt =>
+    inspectedWindows.some(w => appt.startAt < w.endAt && appt.endAt > w.startAt)
+  );
 
   const simulatedShifts = existingShifts
     .filter((sh) => sh.shiftId !== input.shiftId)

@@ -19,7 +19,7 @@ export async function suggestNearestAppointment(appointmentId: number, serviceId
   const today = formatClinicIsoDate(new Date());
   for (let offset = 0; offset < 30; offset++) {
     const date = formatClinicIsoDate(addDays(getClinicDayStart(today), offset));
-    const slots = await getAvailableSlots({ serviceId: serviceId ?? appointment.serviceId, date, patientId: appointment.patientId, excludeAppointmentId: appointmentId, enforceHorizon: false });
+    const slots = await getAvailableSlots({ serviceId: serviceId ?? appointment.serviceId, date, patientId: appointment.patientId, excludeAppointmentId: appointmentId, enforceHorizon: true });
     const slot = slots.find(candidate => !candidate.patientConflicts?.length);
     if (!slot) continue;
     const loads = await db.appointment.groupBy({ by: ["doctorId"], where: { doctorId: { in: slot.eligibleDoctorIds }, appointmentId: { not: appointmentId }, status: { in: ["PENDING", "CONFIRMED", "COMPLETED"] }, startAt: { gte: getClinicDayStart(date), lt: getClinicDayEndExclusive(date) } }, _count: { _all: true } });

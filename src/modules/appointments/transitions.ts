@@ -114,6 +114,7 @@ export async function confirmAppointment(
         doctorId: targetDoctorId,
         startAt: appt.startAt,
         createdAt: now,
+        previousDoctorId: appt.doctorId,
       });
       await persistAppointmentNotifications(tx, drafts);
 

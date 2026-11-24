@@ -15,6 +15,14 @@ test("confirmation notifies both patient and assigned doctor in clinic time", ()
   assert.ok(drafts.every(row => row.appointmentId === 42 && row.createdAt === createdAt));
 });
 
+test("L2: changing doctor while confirming also informs the former doctor", () => {
+  const drafts = buildEnterConfirmedNotifications({...booking, doctorId: 3, previousDoctorId: 2});
+  assert.deepEqual(recipients(drafts), [1,3,2]);
+  assert.match(drafts[2].content, /không còn được phân công/);
+  assert.deepEqual(recipients(buildEnterConfirmedNotifications({...booking, previousDoctorId: 2})), [1,2]);
+  assert.deepEqual(recipients(buildEnterConfirmedNotifications({...booking, previousDoctorId: null})), [1,2]);
+});
+
 test("an unchanged booking produces no reschedule messages", () => {
   assert.deepEqual(buildRescheduleNotifications(change), []);
 });
