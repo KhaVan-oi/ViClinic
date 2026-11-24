@@ -24,8 +24,19 @@ export function buildEnterConfirmedNotifications(input: {
   doctorId: number;
   startAt: Date;
   createdAt: Date;
+  previousDoctorId?: number | null;
 }): NotificationDraft[] {
   const formatted = formatClinicDateTime(input.startAt, "dd/MM/yyyy HH:mm");
+  // L2: đổi bác sĩ ngay lúc xác nhận thì bác sĩ cũ cũng phải được báo (Log #16).
+  const released: NotificationDraft[] =
+    input.previousDoctorId != null && input.previousDoctorId !== input.doctorId
+      ? [{
+        recipientUserId: input.previousDoctorId,
+        appointmentId: input.appointmentId,
+        content: `Lịch hẹn ${input.appointmentId} không còn được phân công cho bạn.`,
+        createdAt: input.createdAt,
+      }]
+      : [];
   return [
     {
       recipientUserId: input.patientId,
@@ -39,6 +50,7 @@ export function buildEnterConfirmedNotifications(input: {
       content: `Bạn có lịch hẹn ${input.appointmentId} vào ${formatted}.`,
       createdAt: input.createdAt,
     },
+    ...released,
   ];
 }
 
