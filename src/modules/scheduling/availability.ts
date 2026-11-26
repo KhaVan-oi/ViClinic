@@ -35,8 +35,6 @@ export async function listEligibleDoctors(input: {
         roles: {
           some: { role: "DOCTOR" },
         },
-        // L3: bác sĩ có tài khoản bị vô hiệu hóa không được đặt / gán / xác nhận lịch.
-        account: { is: { status: { not: "DISABLED" } } },
       },
     },
     select: { doctorId: true, doctor: { select: { fullName: true } } },
@@ -248,8 +246,6 @@ export async function validateCandidateSlot(
     assertValidNewBookingHorizon(input.startAt, now);
   } else if (input.mode === "RESCHEDULE") {
     assertValidFutureRescheduleTime(input.startAt, now);
-    // B3: đổi lịch cũng chịu giới hạn đặt trước tối đa 30 ngày (Log #14).
-    assertValidNewBookingHorizon(input.startAt, now);
   }
 
   if (input.doctorId !== null && input.patientId === input.doctorId) {
