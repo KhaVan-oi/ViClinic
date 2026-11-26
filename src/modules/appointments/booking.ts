@@ -9,7 +9,7 @@ import { parseClinicDateTime } from "@/lib/dates";
 import { validateCandidateSlot } from "@/modules/scheduling/availability";
 import { assertValidNewBookingHorizon } from "@/modules/scheduling/contracts";
 import { buildEnterConfirmedNotifications, persistAppointmentNotifications, buildRescheduleNotifications } from "@/modules/notifications/server";
-import { canPatientSelfCancel, createConfirmedAppointmentSchema, createPendingAppointmentSchema, rescheduleAppointmentSchema } from "@/modules/appointments/contracts";
+import { createConfirmedAppointmentSchema, createPendingAppointmentSchema, rescheduleAppointmentSchema } from "@/modules/appointments/contracts";
 import { AppointmentStatus } from "@/config/business";
 
 type CreatedAppointment<S extends "PENDING" | "CONFIRMED"> = {
@@ -138,14 +138,6 @@ export async function rescheduleAppointment(
       if (ctx.activeContext === "PATIENT") {
         if (appt.patientId !== ctx.userId) throw new DomainError("NOT_FOUND", "Không tìm thấy lịch hẹn.", 404);
         if (appt.status !== "PENDING" || appt.startAt <= now) throw new DomainError("INVALID_STATUS_TRANSITION", "Không thể tự đổi lịch hẹn này. Vui lòng liên hệ phòng khám để được hỗ trợ.", 409);
-        // B2: bệnh nhân tự đổi lịch áp dụng cùng mốc 2 giờ như tự hủy (Log #14).
-        if (canPatientSelfCancel("PENDING", appt.startAt, now).reason === "WITHIN_2_HOUR_CUTOFF") {
-          throw new DomainError(
-            "PATIENT_CANCEL_CUTOFF_EXCEEDED",
-            "Bạn chỉ có thể tự đổi lịch trực tuyến trước giờ hẹn ít nhất 02 giờ. Vui lòng liên hệ Lễ tân phòng khám qua hotline 1900 0091 để được hỗ trợ.",
-            409
-          );
-        }
         assertValidNewBookingHorizon(newStartAt, now);
       }
 

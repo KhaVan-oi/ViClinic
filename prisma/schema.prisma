@@ -122,7 +122,6 @@ model Appointment {
   @@index([serviceId, startAt], map: "idx_appointments_service_start")
   @@index([status, startAt], map: "idx_appointments_status_start")
   @@index([startAt], map: "idx_appointments_start")
-  @@index([doctorId, status, startAt], map: "idx_appointments_doctor_status_start")
   @@map("appointments")
 }
 

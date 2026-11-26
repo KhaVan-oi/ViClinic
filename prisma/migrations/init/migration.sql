@@ -132,7 +132,6 @@ CREATE TABLE "appointments" (
 
 CREATE INDEX "idx_appointments_patient_start" ON "appointments" ("patient_id", "start_at");
 CREATE INDEX "idx_appointments_doctor_start" ON "appointments" ("doctor_id", "start_at");
-CREATE INDEX "idx_appointments_doctor_status_start" ON "appointments" ("doctor_id", "status", "start_at");
 CREATE INDEX "idx_appointments_service_start" ON "appointments" ("service_id", "start_at");
 CREATE INDEX "idx_appointments_status_start" ON "appointments" ("status", "start_at");
 CREATE INDEX "idx_appointments_start" ON "appointments" ("start_at");

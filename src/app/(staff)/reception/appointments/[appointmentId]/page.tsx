@@ -80,7 +80,7 @@ export default async function ReceptionAppointmentDetailPage({
         doctorId: reschedDoctorId,
         patientId: appt.patientId,
         excludeAppointmentId: appt.appointmentId,
-        enforceHorizon: true,
+        enforceHorizon: false,
       }, eligibleDoctors)
       : [];
 
